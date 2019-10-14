@@ -9,9 +9,18 @@ import css from "../css/app.css"
 //
 // Import dependencies
 //
+
 import "phoenix_html"
 
 // Import local files
-//
-// Local files can be imported directly using relative paths, for example:
+
+import gameInit from './game'
+
 // import socket from "./socket"
+
+(() => {
+    let game = document.getElementById("game-root")
+    if(game) {
+        gameInit(game)
+    }
+})()
