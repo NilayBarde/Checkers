@@ -17,6 +17,9 @@ defmodule CheckersGameWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    # Route for the game.
+    get "/game", PageController, :game
   end
 
   # Other scopes may use custom stacks.
