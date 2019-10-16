@@ -31,26 +31,30 @@ class Checkers extends React.Component {
                 if(i%2 == 0) {
                     blacks[count] = {
                         color: "black",
-                        position: 40 + 8*i + j
+                        position: 40 + 8*i + j,
+                        isSelected: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j
+                        position: 8*i + j + 1,
+                        isSelected: false
                     }
-                    board[8*i + j]["disk"] = whites[count]
+                    board[8*i + j + 1]["disk"] = whites[count]
                     board[40 + 8*i + j]["disk"] = blacks[count]
                     count++
                 }
                 else {
                     blacks[count] = {
                         color: "black",
-                        position: 41 + 8*i + j
+                        position: 41 + 8*i + j,
+                        isSelected: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j + 1
+                        position: 8*i + j,
+                        isSelected: false
                     }
-                    board[1 + 8*i + j]["disk"] = whites[count]
+                    board[8*i + j]["disk"] = whites[count]
                     board[41 + 8*i + j]["disk"] = blacks[count]
                     count++
                 }
@@ -131,29 +135,44 @@ class Checkers extends React.Component {
     }
 
     computeMoves(position) {
-        console.log(position)
-        let possibleMoves
+        let { board } = this.state;
+        let possibleMoves;
+
+        // remove highlight from all the previous tiles
+        board.forEach(tile => tile.isHighlighted = false)
+
+        // select the clicked disk
+        board.forEach((tile) => {
+            if(tile.position == position) {
+                if(tile.disk) {
+                    tile.disk.isSelected = true
+                }
+            }
+        })
+        
+        // get the possible moves for the current disk
         if(position >= 40) 
             possibleMoves = [position-7, position-9]
         else 
             possibleMoves = [position+7, position+9]
 
+        // check if there's a disk at the possible move position
         let availableMoves = possibleMoves.filter((tile) => {
             if(!this.state.board[tile].disk)
                 return tile
         })
-        let board = this.state.board
-        board.forEach(tile => tile.isHighlighted = false)
+
+        // highlight all the available move positions for a disk
         availableMoves.forEach(tile => {
             board[tile].isHighlighted = true
         })
         
-        this.setState({board: board})
+        this.setState({board})
     }
 
     render() {
         return (
-            <div>this
+            <div>
                 <div className="row main-row">
                     {/* GAME BOARD */}
                     <div className="column">
