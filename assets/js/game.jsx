@@ -172,28 +172,38 @@ class Checkers extends React.Component {
         })
         
         // get the possible moves for the current disk
-        if(position >= 40) 
+        if(board[position].disk.color === "black") 
             possibleMoves = [position-7, position-9]
         else 
             possibleMoves = [position+7, position+9]
 
         // check if there's a disk at the possible move position
-        let availableMoves = possibleMoves.filter((tile) => {
+        let availableMoves = [] 
+        let jumpTile
+        possibleMoves.forEach((tile) => {
             if(!this.state.board[tile].disk)
-                return tile
+                availableMoves.push(tile) 
 
             // Compute if there is an enemy disk
             else
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
-                    return (tile + delta)
+                    jumpTile = tile + delta
                 }
         })
 
-        // highlight all the available move positions for a disk
-        availableMoves.forEach(tile => {
-            board[tile].isHighlighted = true
-        })
+        if(jumpTile) {
+            // Highlight only the tile that is to be jumped to
+            board[jumpTile].isHighlighted = true
+        }
+        else {
+            // highlight all the available move positions for a disk
+            availableMoves.forEach(tile => {
+                board[tile].isHighlighted = true
+            })
+        }
+
+        console.log(availableMoves, jumpTile)
 
         this.setState({board})
     }
