@@ -150,6 +150,7 @@ class Checkers extends React.Component {
         
         this.setState({board: board})
     }
+
     render() {
         return (
             <div>this
@@ -203,7 +204,12 @@ function Tile(props) {
         if(props.disk) {
             return (
                 <div className="tile-white">
-                    <Disk computeMoves={props.computeMoves} color={props.disk.color} disk={props.disk} position={props.position}/>
+                    <Disk
+                        computeMoves={props.computeMoves}
+                        color={props.disk.color}
+                        disk={props.disk}
+                        position={props.position}
+                    />
                 </div>
             )
         } else {

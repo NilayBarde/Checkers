@@ -30,6 +30,7 @@ body {
     background: #FFFACD;
     height: var(--height);
     width: var(--width);
+    border: solid 5px rgb(139, 1, 1);
     margin: 0;
     cursor: pointer;
     transition: 1s linear ease-out;
