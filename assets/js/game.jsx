@@ -14,6 +14,7 @@ class Checkers extends React.Component {
         let board = Array(64).fill(null).map((el, index) => {
             return {
                 position: index,
+                isHighlighted: false,
             }
         })
 
@@ -86,7 +87,7 @@ class Checkers extends React.Component {
         console.log(this.state)
     }
 
-    //To create the board and populate it with tiles.
+    // To create the board and populate it with tiles.
     createBoard() {
         let row = []
         for (let i = 0; i < 8; i++) {
@@ -101,11 +102,14 @@ class Checkers extends React.Component {
         return row
     }
 
-    //To create a tile.
+    // To create a tile.
     createTile(index, color) {
         return (
             <div className="board-col" key={index} id={"tile-" + index}>
-                <Tile color={color} disk={this.state.board[index].disk}/>
+                <Tile
+                    color={color}
+                    disk={this.state.board[index].disk}
+                    isHighlighted={this.state.board[index].isHighlighted}/>
             </div>
         )
     }
@@ -122,6 +126,7 @@ class Checkers extends React.Component {
             board
         })
     }
+
     render() {
         return (
             <div>
@@ -150,7 +155,6 @@ class Checkers extends React.Component {
                             <button className="chat-btn">Send</button>    
                         </div>
                     </div>
-
                 </div>
             </div>
         )
@@ -167,9 +171,9 @@ function Tile(props) {
                 </div>
             )
         } else {
-            return (
-                <div className="tile-red"></div>
-            )
+            const { isHighlighted } = props;
+            const tile = isHighlighted? <div className="tile-highlighted"/> : <div className="tile-red"/>;
+            return tile;
         }
     }
     else {
@@ -180,9 +184,7 @@ function Tile(props) {
                 </div>
             )
         } else {
-            return (
-                <div className="tile-white"></div>
-            )
+            return <div className="tile-white"></div>;
         }
     }
 }
