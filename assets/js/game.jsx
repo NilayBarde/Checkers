@@ -110,6 +110,8 @@ class Checkers extends React.Component {
                 <Tile
                     color={color}
                     disk={this.state.board[index].disk}
+                    computeMoves={this.computeMoves}
+                    position={index}
                     isHighlighted={this.state.board[index].isHighlighted}/>
             </div>
         )
@@ -141,6 +143,7 @@ class Checkers extends React.Component {
                 return tile
         })
         let board = this.state.board
+        board.forEach(tile => tile.isHighlighted = false)
         availableMoves.forEach(tile => {
             board[tile].isHighlighted = true
         })
