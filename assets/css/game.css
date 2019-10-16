@@ -106,6 +106,9 @@ input[type="text"] {
     padding: 5px 10px;
 }
 
+.message-user {
+    color: purple;
+}
 .black-disk, .white-disk {
     background: black;
     height: 50px;

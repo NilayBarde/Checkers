@@ -46,11 +46,13 @@ class Checkers extends React.Component {
                 else {
                     blacks[count] = {
                         color: "black",
-                        position: 41 + 8*i + j
+                        position: 41 + 8*i + j,
+                        isSelected: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j
+                        position: 8*i + j,
+                        isSelected: false
                     }
                     board[8*i + j]["disk"] = whites[count]
                     board[41 + 8*i + j]["disk"] = blacks[count]
@@ -60,28 +62,55 @@ class Checkers extends React.Component {
         }
 
         let msgs = [
-            "Message1", 
-            "Message2", 
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium.",
-            "Message1", 
-            "Message2", 
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium.",
-            "Message1", 
-            "Message2", 
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium.",
-            "Message1", 
-            "Message2", 
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium.",
-            "Message1", 
-            "Message2", 
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium.",
-
+            {
+                user: "user 1",
+                msg: "Message1"
+            }, 
+            {
+                user: "user 2",
+                msg: "Message2"
+            }, 
+            {
+                user: "user 3",
+                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
+            },
+            {
+                user: "user 1",
+                msg: "Message1"
+            }, 
+            {
+                user: "user 2",
+                msg: "Message2"
+            }, 
+            {
+                user: "user 3",
+                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
+            },
+            {
+                user: "user 1",
+                msg: "Message1"
+            }, 
+            {
+                user: "user 2",
+                msg: "Message2"
+            }, 
+            {
+                user: "user 3",
+                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
+            },
         ]
 
         this.state = {
             board: board,
             message: msgs.map((msg, index) => {
-                return <div className="message" key={index}><div className="message-text">{msg}</div></div>
+                return (
+                    <div className="message" key={index}>
+                        <div className="message-text">
+                            <div className="message-user">{msg.user}</div> 
+                            <div>{msg.msg}</div>
+                        </div>
+                    </div>
+                )
             }),
             whites: whites,
             blacks: blacks 
@@ -119,39 +148,50 @@ class Checkers extends React.Component {
         )
     }
 
-    // A temp function to see the re-rendering of the board
-    demo() {
-        let board = this.state.board
-        let disk = board[0].disk
-        board[18].disk = null
-        disk.position = 27
-        board[27].disk = disk
-        console.log(board)
-        this.setState({
-            board
-        })
-    }
-
     computeMoves(position) {
-        console.log(position)
-        let possibleMoves
+        let { board } = this.state;
+        let possibleMoves;
+
+        // remove highlight from all the previous tiles
+        board.forEach(tile => tile.isHighlighted = false)
+
+        // select the clicked disk
+        board.forEach((tile) => {
+            if(tile.position == position) {
+                if(tile.disk) {
+                    tile.disk.isSelected = true
+                }
+            }
+        })
+        
+        // get the possible moves for the current disk
         if(position >= 40) 
             possibleMoves = [position-7, position-9]
         else 
             possibleMoves = [position+7, position+9]
 
+        // check if there's a disk at the possible move position
         let availableMoves = possibleMoves.filter((tile) => {
             if(!this.state.board[tile].disk)
                 return tile
+
+            // Compute if there is an enemy disk
+            else
+                if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
+                    let delta =  tile - position
+                    return (tile + delta)
+                }
         })
-        let board = this.state.board
-        board.forEach(tile => tile.isHighlighted = false)
+
+        // highlight all the available move positions for a disk
         availableMoves.forEach(tile => {
             board[tile].isHighlighted = true
         })
         
-        this.setState({board: board})
+        this.setState({board})
     }
+
+    
 
     render() {
         return (
