@@ -31,13 +31,15 @@ class Checkers extends React.Component {
                 if(i%2 == 0) {
                     blacks[count] = {
                         color: "black",
-                        position: 40 + 8*i + j
+                        position: 40 + 8*i + j,
+                        isSelected: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j
+                        position: 8*i + j + 1,
+                        isSelected: false
                     }
-                    board[8*i + j]["disk"] = whites[count]
+                    board[8*i + j + 1]["disk"] = whites[count]
                     board[40 + 8*i + j]["disk"] = blacks[count]
                     count++
                 }
@@ -48,9 +50,9 @@ class Checkers extends React.Component {
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j + 1
+                        position: 8*i + j
                     }
-                    board[1 + 8*i + j]["disk"] = whites[count]
+                    board[8*i + j]["disk"] = whites[count]
                     board[41 + 8*i + j]["disk"] = blacks[count]
                     count++
                 }
@@ -153,7 +155,7 @@ class Checkers extends React.Component {
 
     render() {
         return (
-            <div>this
+            <div>
                 <div className="row main-row">
                     {/* GAME BOARD */}
                     <div className="column">
