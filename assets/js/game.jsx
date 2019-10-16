@@ -9,11 +9,13 @@ export default function gameInit(root) {
 class Checkers extends React.Component {
     constructor(props) {
         super(props)
+        this.computeMoves = this.computeMoves.bind(this)
         
         // Setting up color for each tile in the board.
         let board = Array(64).fill(null).map((el, index) => {
             return {
                 position: index,
+                isHighlighted: false
             }
         })
 
@@ -105,7 +107,7 @@ class Checkers extends React.Component {
     createTile(index, color) {
         return (
             <div className="board-col" key={index} id={"tile-" + index}>
-                <Tile color={color} disk={this.state.board[index].disk}/>
+                <Tile computeMoves={ this.computeMoves } color={color} disk={this.state.board[index].disk} position={index}/>
             </div>
         )
     }
@@ -122,9 +124,29 @@ class Checkers extends React.Component {
             board
         })
     }
+
+    computeMoves(position) {
+        console.log(position)
+        let possibleMoves
+        if(position >= 40) 
+            possibleMoves = [position-7, position-9]
+        else 
+            possibleMoves = [position+7, position+9]
+
+        let availableMoves = possibleMoves.filter((tile) => {
+            if(!this.state.board[tile].disk)
+                return tile
+        })
+        let board = this.state.board
+        availableMoves.forEach(tile => {
+            board[tile].isHighlighted = true
+        })
+        
+        this.setState({board: board})
+    }
     render() {
         return (
-            <div>
+            <div>this
                 <div className="row main-row">
                     {/* GAME BOARD */}
                     <div className="column">
@@ -163,7 +185,7 @@ function Tile(props) {
         if(props.disk) {
             return (
                 <div className="tile-red">
-                    <Disk color={props.disk.color}/>
+                    <Disk computeMoves={props.computeMoves} color={props.disk.color} disk={props.disk} position={props.position}/>
                 </div>
             )
         } else {
@@ -176,7 +198,7 @@ function Tile(props) {
         if(props.disk) {
             return (
                 <div className="tile-white">
-                    <Disk color={props.disk.color} />
+                    <Disk computeMoves={props.computeMoves} color={props.disk.color} disk={props.disk} position={props.position}/>
                 </div>
             )
         } else {
@@ -191,12 +213,12 @@ function Tile(props) {
 function Disk(props) {
     if(props.color == "black") {
         return (
-            <div className="black-disk"></div>
+            <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
         )
     }
     else {
         return (
-            <div className="white-disk"></div>
+            <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
         )
     }
 }
