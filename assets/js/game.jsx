@@ -10,6 +10,7 @@ class Checkers extends React.Component {
     constructor(props) {
         super(props)
         this.computeMoves = this.computeMoves.bind(this)
+        this.moveDisk = this.moveDisk.bind(this)
         
         // Setting up color for each tile in the board.
         let board = Array(64).fill(null).map((el, index) => {
@@ -116,7 +117,9 @@ class Checkers extends React.Component {
                     disk={this.state.board[index].disk}
                     computeMoves={this.computeMoves}
                     position={index}
-                    isHighlighted={this.state.board[index].isHighlighted}/>
+                    isHighlighted={this.state.board[index].isHighlighted}
+                    moveDisk={this.moveDisk}
+                />
             </div>
         )
     }
@@ -147,6 +150,10 @@ class Checkers extends React.Component {
                 if(tile.disk) {
                     tile.disk.isSelected = true
                 }
+            } else {
+                if(tile.disk) {
+                    tile.disk.isSelected = false
+                }
             }
         })
         
@@ -166,8 +173,31 @@ class Checkers extends React.Component {
         availableMoves.forEach(tile => {
             board[tile].isHighlighted = true
         })
-        
+
         this.setState({board})
+    }
+
+    moveDisk(position) {
+        const { board } = this.state;
+        let selectedDisk
+        
+        // remove highlight from all the previous tiles
+        board.forEach(tile => tile.isHighlighted = false)
+
+        board.forEach((tile) => {
+            if(tile.disk && tile.disk.isSelected) {
+                tile.disk.isSelected = false
+                tile.disk.position = position
+                selectedDisk = tile.disk
+                tile.disk = null
+            }
+        })
+        board.forEach((tile) => {
+            if (tile.position == position) {
+                tile.disk = selectedDisk
+            }
+        })
+        this.setState({ board })
     }
 
     render() {
@@ -210,12 +240,18 @@ function Tile(props) {
         if(props.disk) {
             return (
                 <div className="tile-red">
-                    <Disk computeMoves={props.computeMoves} color={props.disk.color} disk={props.disk} position={props.position}/>
+                    <Disk
+                        computeMoves={props.computeMoves}
+                        color={props.disk.color}
+                        disk={props.disk}
+                        position={props.position}
+                    />
                 </div>
             )
         } else {
             const { isHighlighted } = props;
-            const tile = isHighlighted? <div className="tile-highlighted"/> : <div className="tile-red"/>;
+            const tile = isHighlighted? 
+                <div className="tile-highlighted" onClick={() => {props.moveDisk(props.position)}}/> : <div className="tile-red"/>;
             return tile;
         }
     }
