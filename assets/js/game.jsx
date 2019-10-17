@@ -153,6 +153,28 @@ class Checkers extends React.Component {
         )
     }
 
+    // checks if a disk is King
+    isKing(disk) {
+        if (disk.color == 'black' && disk.position <= 7) {
+            return true;
+        }
+        if (disk.color == 'white' && disk.position >= 56) {
+            return true;
+        }
+        return false;
+    }
+
+    hasGameEnded() {
+        const { blacks, whites, board } = this.state;
+        const noBlackDisks = blacks.length == 0;
+        const noWhiteDisks = whites.length == 0;
+        if (noBlackDisks) {
+            alert('Player 2 won!');
+        } else if (noWhiteDisks) {
+            alert('Player 1 won!');
+        }
+    }
+
     // To compute the next possible moves for a selected disk
     computeMoves(position) {
         let { board } = this.state;
@@ -260,12 +282,16 @@ class Checkers extends React.Component {
             }
         })
 
+        // check if the selected disk becomes king after moving to position
+        selectedDisk.isKing = this.isKing(selectedDisk)
+
         // move the disk to the selected tile
         board.forEach((tile) => {
             if (tile.position == position) {
                 tile.disk = selectedDisk
             }
         })
+        this.hasGameEnded();
         this.setState({ board })
     }
 
@@ -280,7 +306,7 @@ class Checkers extends React.Component {
                         <div className="row action-row">
                         <div className="column">
                             <button onClick={() => {this.demo()}}>Quit Game</button>
-                         </div>
+                        </div>
                         <div className="column">
                             <button>Raise a draw</button>
                         </div>
@@ -345,13 +371,26 @@ function Tile(props) {
 // Component for disk.
 function Disk(props) {
     if(props.color == "black") {
-        return (
-            <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
-        )
+        if (props.disk.isKing) {
+            return (
+                <div className="black-disk-king" onClick={() => {props.computeMoves(props.position)}}></div>
+            )
+        } else {
+            return (
+                <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
+            )
+        }
+        
     }
     else {
-        return (
-            <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
-        )
+        if (props.disk.isKing) {
+            return (
+                <div className="white-disk-king" onClick={() => props.computeMoves(props.position)}></div>
+            )
+        } else {
+            return (
+                <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
+            )
+        }
     }
 }
