@@ -192,8 +192,13 @@ class Checkers extends React.Component {
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
                     //Check if the tile after that disk is empty or not
-                    if(!this.state.board[tile + delta].disk)
-                        jumpTiles.push(tile + delta)
+                    if(!this.state.board[tile + delta].disk) {
+                        //Check for the edge case
+                        if(delta !== -7 && delta !== 7)
+                            jumpTiles.push(tile + delta)
+                        //Check if there is possibility of double kill
+                        
+                    }
                 }
         })
 
