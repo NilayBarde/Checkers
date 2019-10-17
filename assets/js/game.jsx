@@ -10,6 +10,7 @@ class Checkers extends React.Component {
     constructor(props) {
         super(props)
         this.computeMoves = this.computeMoves.bind(this)
+        this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
         
         // Setting up color for each tile in the board.
@@ -144,7 +145,7 @@ class Checkers extends React.Component {
                 <Tile
                     color={color}
                     disk={this.state.board[index].disk}
-                    computeMoves={this.computeMoves}
+                    getMoves={this.getMoves}
                     position={index}
                     isHighlighted={this.state.board[index].isHighlighted}
                     moveDisk={this.moveDisk}
@@ -215,8 +216,8 @@ class Checkers extends React.Component {
                     let delta =  tile - position
                     //Check if the tile after that disk is empty or not
                     if(!this.state.board[tile + delta].disk) {
-                        //Check for the edge case
-                        if(delta !== -7 && delta !== 7)
+                        //Check for the right and left edge case
+                        if((tile+1)%8 !== 0 && tile%8 !== 0)
                             jumpTiles.push(tile + delta)
                         //Check if there is possibility of double kill
                         
@@ -224,17 +225,13 @@ class Checkers extends React.Component {
                 }
         })
 
-        if(jumpTiles.length > 0) {
-            // Highlight only the tile that is to be jumped to
-            jumpTiles.forEach(tile => board[tile].isHighlighted = true)
-        }
-        else {
-            // highlight all the available move positions for a disk
-            availableMoves.forEach(tile => board[tile].isHighlighted = true)
-        }
+        return jumpTiles.length > 0 ? jumpTiles : availableMoves
+    }
 
-        console.log(availableMoves, jumpTiles)
-
+    getMoves(position) {
+        const moves = this.computeMoves(position)
+        const board = this.state.board
+        moves.forEach(tile => board[tile].isHighlighted = true)
         this.setState({board})
     }
 
@@ -336,7 +333,7 @@ function Tile(props) {
             return (
                 <div className="tile-red">
                     <Disk
-                        computeMoves={props.computeMoves}
+                        getMoves={props.getMoves}
                         color={props.disk.color}
                         disk={props.disk}
                         position={props.position}
@@ -355,7 +352,7 @@ function Tile(props) {
             return (
                 <div className="tile-white">
                     <Disk
-                        computeMoves={props.computeMoves}
+                        getMoves={props.getMoves}
                         color={props.disk.color}
                         disk={props.disk}
                         position={props.position}
@@ -373,11 +370,11 @@ function Disk(props) {
     if(props.color == "black") {
         if (props.disk.isKing) {
             return (
-                <div className="black-disk-king" onClick={() => {props.computeMoves(props.position)}}></div>
+                <div className="black-disk-king" onClick={() => {props.getMoves(props.position)}}></div>
             )
         } else {
             return (
-                <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
+                <div className="black-disk" onClick={() => {props.getMoves(props.position)}}></div>
             )
         }
         
@@ -385,11 +382,11 @@ function Disk(props) {
     else {
         if (props.disk.isKing) {
             return (
-                <div className="white-disk-king" onClick={() => props.computeMoves(props.position)}></div>
+                <div className="white-disk-king" onClick={() => props.getMoves(props.position)}></div>
             )
         } else {
             return (
-                <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
+                <div className="white-disk" onClick={() => props.getMoves(props.position)}></div>
             )
         }
     }
