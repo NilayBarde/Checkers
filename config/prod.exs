@@ -10,7 +10,11 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :checkers_game, CheckersGameWeb.Endpoint,
-  url: [host: "example.com", port: 80],
+  server: true,
+  root: ".",
+  version: Application.spec(:pheonix_distillery, :vsn),
+  http: [:inet6, port: {:system, "PORT"}],
+  url: [host: "checkers.megharth.site", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production

@@ -1,0 +1,16 @@
+[Unit]
+Description=Checkers Game
+
+[Service]
+Type=simple
+User=checkers
+Group=checkers
+Restart-on=failure
+Environment=MIX_ENV=prod "PORT=4800"
+Environment=LANG=en_US.UTF-8
+
+WorkingDirectory=/home/checkers/Checkers
+ExecStart=bash /home/checkers/Checkers/start.sh
+
+[Install]
+WantedBy=multi-user.target
