@@ -33,12 +33,14 @@ class Checkers extends React.Component {
                     blacks[count] = {
                         color: "black",
                         position: 40 + 8*i + j,
-                        isSelected: false
+                        isSelected: false,
+                        isKing: false
                     }
                     whites[count] = {
                         color: "white",
                         position: 8*i + j + 1,
-                        isSelected: false
+                        isSelected: false,
+                        isKing: false
                     }
                     board[8*i + j + 1]["disk"] = whites[count]
                     board[40 + 8*i + j]["disk"] = blacks[count]
@@ -48,12 +50,14 @@ class Checkers extends React.Component {
                     blacks[count] = {
                         color: "black",
                         position: 41 + 8*i + j,
-                        isSelected: false
+                        isSelected: false,
+                        isKing: false
                     }
                     whites[count] = {
                         color: "white",
                         position: 8*i + j,
-                        isSelected: false
+                        isSelected: false,
+                        isKing: false
                     }
                     board[8*i + j]["disk"] = whites[count]
                     board[41 + 8*i + j]["disk"] = blacks[count]
@@ -200,11 +204,12 @@ class Checkers extends React.Component {
 
     moveDisk(position) {
         const { board } = this.state;
-        let selectedDisk
         
         // remove highlight from all the previous tiles
         board.forEach(tile => tile.isHighlighted = false)
 
+        // get the selected disk
+        let selectedDisk
         board.forEach((tile) => {
             if(tile.disk && tile.disk.isSelected) {
                 tile.disk.isSelected = false
@@ -213,6 +218,8 @@ class Checkers extends React.Component {
                 tile.disk = null
             }
         })
+
+        // move the disk to the selected tile
         board.forEach((tile) => {
             if (tile.position == position) {
                 tile.disk = selectedDisk
