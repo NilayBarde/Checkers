@@ -214,10 +214,17 @@ class Checkers extends React.Component {
             else
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
+                    const deltaInBounds = delta >= 0 && delta <= 63
                     //Check if the tile after that disk is empty or not
+<<<<<<< HEAD
                     if(!this.state.board[tile + delta].disk) {
                         //Check for the right and left edge case
                         if((tile+1)%8 !== 0 && tile%8 !== 0)
+=======
+                    if(deltaInBounds && !this.state.board[tile + delta].disk) {
+                        //Check for the edge case
+                        if(delta !== -7 && delta !== 7)
+>>>>>>> 6be58331cc3e083156f329a779c1d974ce5bbf56
                             jumpTiles.push(tile + delta)
                         //Check if there is possibility of double kill
                         
