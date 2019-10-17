@@ -116,8 +116,6 @@ class Checkers extends React.Component {
             whites: whites,
             blacks: blacks 
         }
-
-        console.log(this.state)
     }
 
     // To create the board and populate it with tiles.
@@ -151,6 +149,7 @@ class Checkers extends React.Component {
         )
     }
 
+    // To compute the next possible moves for a selected disk
     computeMoves(position) {
         let { board } = this.state;
         let possibleMoves;
@@ -179,7 +178,7 @@ class Checkers extends React.Component {
 
         // check if there's a disk at the possible move position
         let availableMoves = [] 
-        let jumpTile
+        let jumpTiles = []
         possibleMoves.forEach((tile) => {
             if(!this.state.board[tile].disk)
                 availableMoves.push(tile) 
@@ -188,22 +187,22 @@ class Checkers extends React.Component {
             else
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
-                    jumpTile = tile + delta
+                    //Check if the tile after that disk is empty or not
+                    if(!this.state.board[tile + delta].disk)
+                        jumpTiles.push(tile + delta)
                 }
         })
 
-        if(jumpTile) {
+        if(jumpTiles.length > 0) {
             // Highlight only the tile that is to be jumped to
-            board[jumpTile].isHighlighted = true
+            jumpTiles.forEach(tile => board[tile].isHighlighted = true)
         }
         else {
             // highlight all the available move positions for a disk
-            availableMoves.forEach(tile => {
-                board[tile].isHighlighted = true
-            })
+            availableMoves.forEach(tile => board[tile].isHighlighted = true)
         }
 
-        console.log(availableMoves, jumpTile)
+        console.log(availableMoves, jumpTiles)
 
         this.setState({board})
     }
@@ -218,9 +217,36 @@ class Checkers extends React.Component {
         board.forEach((tile) => {
             if(tile.disk && tile.disk.isSelected) {
                 tile.disk.isSelected = false
+
+                // Check if the enemy disk was killed
+                if(Math.abs(tile.disk.position - position) > 9) {
+                    let delta = (tile.disk.position - position)/2
+                    const deadDisk = tile.disk.position - delta
+                    let color = board[deadDisk].disk.color
+                    board[deadDisk].disk = null
+                    
+                    // Remove enemy disk from the white/black array
+                    if(color === "white") {
+                        this.state.whites.forEach(disk => {
+                            if(disk.position === deadDisk) {
+                                this.state.whites.splice(this.state.whites.indexOf(disk), 1)
+                            }
+                        })   
+                    }
+                    else {
+                        this.state.blacks.forEach(disk => {
+                            if(disk.position === deadDisk) {
+                                this.state.blacks.splice(this.state.blacks.indexOf(disk), 1)
+                            }
+                        })
+                    }
+                }
+
+                // Move the current disk to appropriate position
                 tile.disk.position = position
                 selectedDisk = tile.disk
                 tile.disk = null
+                console.log(this.state)
             }
         })
         board.forEach((tile) => {
@@ -242,7 +268,7 @@ class Checkers extends React.Component {
                         <div className="row action-row">
                         <div className="column">
                             <button onClick={() => {this.demo()}}>Quit Game</button>
-                        </div>
+                         </div>
                         <div className="column">
                             <button>Raise a draw</button>
                         </div>
