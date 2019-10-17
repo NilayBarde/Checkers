@@ -153,6 +153,17 @@ class Checkers extends React.Component {
         )
     }
 
+    // checks if a tile is King
+    isKing(disk) {
+        if (disk.color == 'black' && disk.position <= 7) {
+            return true;
+        }
+        if (disk.color == 'white' && disk.position >= 56) {
+            return true;
+        }
+        return false;
+    }
+
     // To compute the next possible moves for a selected disk
     computeMoves(position) {
         let { board } = this.state;
@@ -255,12 +266,18 @@ class Checkers extends React.Component {
             }
         })
 
+        // check if the selected disk becomes king after moving to position
+        if(this.isKing(selectedDisk)) {
+            selectedDisk.isKing = true;
+        }
+
         // move the disk to the selected tile
         board.forEach((tile) => {
             if (tile.position == position) {
                 tile.disk = selectedDisk
             }
         })
+
         this.setState({ board })
     }
 
@@ -340,13 +357,27 @@ function Tile(props) {
 // Component for disk.
 function Disk(props) {
     if(props.color == "black") {
-        return (
-            <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
-        )
+        if (props.disk.isKing) {
+            return (
+                <div className="black-disk-king" onClick={() => {props.computeMoves(props.position)}}></div>
+            )
+        } else {
+            return (
+                <div className="black-disk" onClick={() => {props.computeMoves(props.position)}}></div>
+            )
+        }
+        
     }
     else {
-        return (
-            <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
-        )
+        if (props.disk.isKing) {
+            return (
+                <div className="white-disk-king" onClick={() => props.computeMoves(props.position)}></div>
+            )
+        } else {
+            return (
+                <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
+            )
+        }
+        
     }
 }

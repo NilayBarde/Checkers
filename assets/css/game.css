@@ -124,3 +124,29 @@ input[type="text"] {
 .white-disk {
     background: #aaaaaa;
 }
+
+.black-disk-king {
+    background: black;
+    height: 50px;
+    width: 50px;
+    border: 3px solid #aaaaaa;
+    border-radius: 50%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
+
+.white-disk-king {
+    background: #aaaaaa;
+    height: 50px;
+    width: 50px;
+    border: 3px solid black;
+    border-radius: 50%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
