@@ -19,6 +19,4 @@ mix phx.digest
 echo "generating release..."
 mix release
 
-echo "starting app..."
-
-_build/prod/rel/checkers_game/bin/checkers_game start
+echo "build complete!"
