@@ -220,20 +220,20 @@ class Checkers extends React.Component {
     computeMoves(position) {
         let { board } = this.state;
         let possibleMoves = this.getPossibleMoves(board[position].disk, position);
-        console.log(possibleMoves)
+        
         // check if there's a disk at the possible move position
         let availableMoves = []
         let jumpTiles = []
         possibleMoves.forEach((tile) => {
-            if(!this.state.board[tile].disk)
+            if(!board[tile].disk)
                 availableMoves.push(tile) 
 
             // Compute if there is an enemy disk
             else {
-                if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
+                if(board[tile].disk.color !== board[position].disk.color) {
                     let delta =  tile - position
                     //Check if the tile after that disk is empty or not
-                    if(!this.state.board[tile + delta].disk) {
+                    if(!board[tile + delta].disk) {
                         //Check for the left and right edge
                         if((tile+1)%8 !== 0 && tile%8 !==0)
                             jumpTiles.push(tile + delta)                        
@@ -244,26 +244,27 @@ class Checkers extends React.Component {
 
         //Check if there is possibility of double kill
         let doubleKills = []
-        console.log(jumpTiles)
         if(jumpTiles.length > 0) {
             jumpTiles.forEach(tile => {
                 
-                console.log(this.getPossibleMoves(board[position].disk, tile))
-                // let deltaOne =  tile - position
-                // let deltaTwo = deltaOne < 0 ? deltaOne + 4 : deltaOne - 4
-                
-                // // console.log(this.state.board[tile + 7])
-                // if(this.state.board[position].disk.color !== this.state.board[tile + 7].disk.color) {
-                //     // Check if the tile after that disk is empty or not
-                //     if(!this.state.board[tile + deltaOne].disk)
-                //             doubleKills.push(tile + deltaOne)                        
-                //     if(!this.state.board[tile + deltaTwo].disk)
-                //             doubleKills.push(tile + deltaTwo)
-                // }
+                //STEPS
+                //GET POSSIBLE MOVES
+                const tempMoves = this.getPossibleMoves(board[position].disk, tile)
+                //FIND ENEMY
+                 
+                tempMoves.forEach(tempTile => {
+                    if(board[tempTile].disk.color !== board[position].disk.color) {
+                        let delta = 2 * (tempTile - tile)
+                        
+                        //CHECK IF TILE AFTER THE ENEMY IS EMPTY
+                        if(!board[tile + delta].disk) {
+                            doubleKills.push(tile + delta)
+                        }
+                    }
+                })
             })
         }
 
-        console.log(doubleKills)
 
         if(doubleKills.length > 0)
             return doubleKills
