@@ -231,12 +231,14 @@ class Checkers extends React.Component {
                         let delta = tile - position
                         console.log("kill move available")
                         //Check if the tile after that disk is empty or not
-                        if (!this.state.board[tile + delta].disk) {
-                            //Check for the edge case
-                            if ((tile + 1) % 8 !== 0 && tile % 8 !== 0)
-                                jumpTiles.push(tile + delta)
-                            //Check if there is possibility of double kill
+                        if (this.state.board[tile + delta] != null) {
+                            if (!this.state.board[tile + delta].disk) {
+                                //Check for the edge case
+                                if ((tile + 1) % 8 !== 0 && tile % 8 !== 0)
+                                    jumpTiles.push(tile + delta)
+                                //Check if there is possibility of double kill
 
+                            }
                         }
                     }
                 }
