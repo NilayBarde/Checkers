@@ -246,37 +246,25 @@ class Checkers extends React.Component {
         let doubleKills = []
         if(jumpTiles.length > 0) {
             jumpTiles.forEach(tile => {
-                
-                //STEPS
                 //GET POSSIBLE MOVES
                 const tempMoves = this.getPossibleMoves(board[position].disk, tile)
-                //FIND ENEMY
-                 
+                console.log(tempMoves)
+                //FIND ENEMY                 
                 tempMoves.forEach(tempTile => {
                     if(board[tempTile].disk) {
                         if(board[tempTile].disk.color !== board[position].disk.color) {
                             let delta = 2 * (tempTile - tile)
-                            
                             //CHECK IF TILE AFTER THE ENEMY IS EMPTY
-                            if(!board[tile + delta].disk) {
-                                doubleKills.push(tile + delta)
+                            if(tile + delta >= 0 && tile + delta <= 63) {
+                                console.log(board[tile + delta])
+                                if(!board[tile + delta].disk) {
+                                    if((tile + 1) % 8 !== 0 && tile % 8 == 0)
+                                        doubleKills.push(tile + delta)
+                                }
                             }
                         }
                     }
                 })
-
-
-                // let deltaOne =  tile - position
-                // let deltaTwo = deltaOne < 0 ? deltaOne + 4 : deltaOne - 4
-                
-                // // console.log(this.state.board[tile + 7])
-                // if(this.state.board[position].disk.color !== this.state.board[tile + 7].disk.color) {
-                //     // Check if the tile after that disk is empty or not
-                //     if(!this.state.board[tile + deltaOne].disk)
-                //             doubleKills.push(tile + deltaOne)                        
-                //     if(!this.state.board[tile + deltaTwo].disk)
-                //             doubleKills.push(tile + deltaTwo)
-                // }
             })
         }
 
