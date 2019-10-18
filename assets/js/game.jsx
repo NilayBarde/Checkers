@@ -220,21 +220,19 @@ class Checkers extends React.Component {
         let availableMoves = [] 
         let jumpTiles = []
         possibleMoves.forEach((tile) => {
-            if(this.state.board[tile] != null) {
-                if(!this.state.board[tile].disk)
-                    availableMoves.push(tile) 
-            }
+            if(!this.state.board[tile].disk)
+                availableMoves.push(tile) 
 
             // Compute if there is an enemy disk
-            else
-            if(this.state.board[tile] != null) {
+            else {
+                console.log("inside else")
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
-                    const deltaInBounds = delta >= 0 && delta <= 63
+                    console.log("kill move available")
                     //Check if the tile after that disk is empty or not
-                    if(deltaInBounds && !this.state.board[tile + delta].disk) {
+                    if(!this.state.board[tile + delta].disk) {
                         //Check for the edge case
-                        if(delta !== -7 && delta !== 7)
+                        if((tile+1)%8 !== 0 && tile%8 !==0)
                             jumpTiles.push(tile + delta)
                         //Check if there is possibility of double kill
                         
@@ -242,6 +240,7 @@ class Checkers extends React.Component {
                 }
             }
         })
+
 
         return jumpTiles.length > 0 ? jumpTiles : availableMoves
     }
