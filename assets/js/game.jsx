@@ -176,46 +176,51 @@ class Checkers extends React.Component {
         }
     }
 
-    // To compute the next possible moves for a selected disk
-    computeMoves(position) {
-        let { board } = this.state;
-        let possibleMoves;
-
-        // remove highlight from all the previous tiles
-        board.forEach(tile => tile.isHighlighted = false)
-
-        // select the clicked disk
-        board.forEach((tile) => {
-            if (tile.position == position) {
-                if (tile.disk) {
-                    tile.disk.isSelected = true
-                }
-            } else {
-                if (tile.disk) {
-                    tile.disk.isSelected = false
-                }
-            }
-        })
-
-        // get the possible moves for the current disk
-        console.log(board[position].disk.isKing)
-        if (board[position].disk.isKing) {
+    // get the possible moves for the current disk
+    getPossibleMoves(disk, position) {
+        let possibleMoves
+        if (disk.isKing) {
             // get the possible moves for the current king disk            
-            if (board[position].disk.color === "black")
+            if (disk.color === "black")
                 possibleMoves = [position - 7, position - 9, position + 9, position + 7]
             else
                 possibleMoves = [position + 7, position + 9, position - 9, position - 7]
         }
         else {
             // get the possible moves for the current disk
-            if (board[position].disk.color === "black")
+            if (disk.color === "black") {
                 possibleMoves = [position - 7, position - 9]
-            else
+                
+                // To ensure that it return only position from the next row
+                possibleMoves = possibleMoves.filter(el => {
+                    let allowedRow = ((position - (position%8)) / 8) - 1
+                    const lowerBound = allowedRow * 8
+                    const upperBound = allowedRow*8 + 7
+                    if(el >= lowerBound && el <= upperBound)
+                        return el
+                })
+            }
+            else {
                 possibleMoves = [position + 7, position + 9]
+
+                // To ensure that it return only position from the next row
+                possibleMoves = possibleMoves.filter(el => {
+                    let allowedRow = ((position - (position%8)) / 8) + 1
+                    const lowerBound = allowedRow * 8
+                    const upperBound = allowedRow*8 + 7
+                    if(el >= lowerBound && el <= upperBound)
+                        return el
+                })
+            }
         }
+        return possibleMoves
+    }
 
-        console.log(board[position].disk)
-
+    // To compute the next possible moves for a selected disk
+    computeMoves(position) {
+        let { board } = this.state;
+        let possibleMoves = this.getPossibleMoves(board[position].disk, position);
+        console.log(possibleMoves)
         // check if there's a disk at the possible move position
         let availableMoves = []
         let jumpTiles = []
@@ -242,20 +247,19 @@ class Checkers extends React.Component {
         console.log(jumpTiles)
         if(jumpTiles.length > 0) {
             jumpTiles.forEach(tile => {
-                let delta =  tile - position
-                console.log(tile + delta + 4)
-                // console.log(this.state.board[tile + delta].disk)
-                // Check if the tile after that disk is empty or not
-                if(!this.state.board[tile + delta].disk) {
-                    //Check for the left and right edge
-                    if((tile+1)%8 !== 0 && tile%8 !==0)
-                        doubleKills.push(tile + delta)                        
-                }
-                if(!this.state.board[tile + delta + 4].disk) {
-                    //Check for the left and right edge
-                    if((tile+1)%8 !== 0 && tile%8 !==0)
-                        doubleKills.push(tile + delta + 4)
-                }
+                
+                console.log(this.getPossibleMoves(board[position].disk, tile))
+                // let deltaOne =  tile - position
+                // let deltaTwo = deltaOne < 0 ? deltaOne + 4 : deltaOne - 4
+                
+                // // console.log(this.state.board[tile + 7])
+                // if(this.state.board[position].disk.color !== this.state.board[tile + 7].disk.color) {
+                //     // Check if the tile after that disk is empty or not
+                //     if(!this.state.board[tile + deltaOne].disk)
+                //             doubleKills.push(tile + deltaOne)                        
+                //     if(!this.state.board[tile + deltaTwo].disk)
+                //             doubleKills.push(tile + deltaTwo)
+                // }
             })
         }
 
@@ -268,8 +272,25 @@ class Checkers extends React.Component {
     }
 
     getMoves(position) {
-        const moves = this.computeMoves(position)
         const board = this.state.board
+
+        // remove highlight from all the previous tiles
+        board.forEach(tile => tile.isHighlighted = false)
+
+        // select the clicked disk
+        board.forEach((tile) => {
+            if (tile.position == position) {
+                if (tile.disk) {
+                    tile.disk.isSelected = true
+                }
+            } else {
+                if (tile.disk) {
+                    tile.disk.isSelected = false
+                }
+            }
+        })
+
+        const moves = this.computeMoves(position)
         moves.forEach(tile => board[tile].isHighlighted = true)
         this.setState({ board })
     }
