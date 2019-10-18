@@ -225,24 +225,46 @@ class Checkers extends React.Component {
 
             // Compute if there is an enemy disk
             else {
-                console.log("inside else")
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
-                    console.log("kill move available")
                     //Check if the tile after that disk is empty or not
                     if(!this.state.board[tile + delta].disk) {
-                        //Check for the edge case
+                        //Check for the left and right edge
                         if((tile+1)%8 !== 0 && tile%8 !==0)
-                            jumpTiles.push(tile + delta)
-                        //Check if there is possibility of double kill
-                        
+                            jumpTiles.push(tile + delta)                        
                     }
                 }
             }
         })
 
+        //Check if there is possibility of double kill
+        let doubleKills = []
+        console.log(jumpTiles)
+        if(jumpTiles.length > 0) {
+            jumpTiles.forEach(tile => {
+                let delta =  tile - position
+                console.log(tile + delta + 4)
+                // console.log(this.state.board[tile + delta].disk)
+                // Check if the tile after that disk is empty or not
+                if(!this.state.board[tile + delta].disk) {
+                    //Check for the left and right edge
+                    if((tile+1)%8 !== 0 && tile%8 !==0)
+                        doubleKills.push(tile + delta)                        
+                }
+                if(!this.state.board[tile + delta + 4].disk) {
+                    //Check for the left and right edge
+                    if((tile+1)%8 !== 0 && tile%8 !==0)
+                        doubleKills.push(tile + delta + 4)
+                }
+            })
+        }
 
-        return jumpTiles.length > 0 ? jumpTiles : availableMoves
+        console.log(doubleKills)
+
+        if(doubleKills.length > 0)
+            return doubleKills
+        else
+            return jumpTiles.length > 0 ? jumpTiles : availableMoves
     }
 
     getMoves(position) {
