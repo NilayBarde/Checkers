@@ -253,18 +253,34 @@ class Checkers extends React.Component {
                 //FIND ENEMY
                  
                 tempMoves.forEach(tempTile => {
-                    if(board[tempTile].disk.color !== board[position].disk.color) {
-                        let delta = 2 * (tempTile - tile)
-                        
-                        //CHECK IF TILE AFTER THE ENEMY IS EMPTY
-                        if(!board[tile + delta].disk) {
-                            doubleKills.push(tile + delta)
+                    if(board[tempTile].disk) {
+                        if(board[tempTile].disk.color !== board[position].disk.color) {
+                            let delta = 2 * (tempTile - tile)
+                            
+                            //CHECK IF TILE AFTER THE ENEMY IS EMPTY
+                            if(!board[tile + delta].disk) {
+                                doubleKills.push(tile + delta)
+                            }
                         }
                     }
                 })
+
+
+                // let deltaOne =  tile - position
+                // let deltaTwo = deltaOne < 0 ? deltaOne + 4 : deltaOne - 4
+                
+                // // console.log(this.state.board[tile + 7])
+                // if(this.state.board[position].disk.color !== this.state.board[tile + 7].disk.color) {
+                //     // Check if the tile after that disk is empty or not
+                //     if(!this.state.board[tile + deltaOne].disk)
+                //             doubleKills.push(tile + deltaOne)                        
+                //     if(!this.state.board[tile + deltaTwo].disk)
+                //             doubleKills.push(tile + deltaTwo)
+                // }
             })
         }
 
+        console.log(doubleKills)
 
         if(doubleKills.length > 0)
             return doubleKills
