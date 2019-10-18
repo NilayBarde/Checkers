@@ -199,12 +199,13 @@ class Checkers extends React.Component {
         
         // get the possible moves for the current disk
         console.log(board[position].disk.isKing)
+        
         if(board[position].disk.isKing) {
             // get the possible moves for the current king disk            
             if(board[position].disk.color === "black") 
-                possibleMoves = [position-7, position-9, position+9, position+7]
-            else 
-                possibleMoves = [position+7, position+9, position-9, position-7]
+            possibleMoves = [position-7, position-9, position+9, position+7]
+        else 
+            possibleMoves = [position+7, position+9, position-9, position-7]
         }
         else {
             // get the possible moves for the current disk
@@ -216,31 +217,34 @@ class Checkers extends React.Component {
 
         console.log(board[position].disk)
 
+
         // check if there's a disk at the possible move position
         let availableMoves = [] 
         let jumpTiles = []
         possibleMoves.forEach((tile) => {
-            if(this.state.board[tile] != null) {
-                if(!this.state.board[tile].disk)
-                    availableMoves.push(tile) 
-            }
+            if(!this.state.board[tile].disk)
+                availableMoves.push(tile) 
 
             // Compute if there is an enemy disk
             else
-            if(this.state.board[tile] != null) {
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
                     const deltaInBounds = delta >= 0 && delta <= 63
                     //Check if the tile after that disk is empty or not
+<<<<<<< HEAD
+                    if(!this.state.board[tile + delta].disk) {
+                        //Check for the right and left edge case
+                        if((tile+1)%8 !== 0 && tile%8 !== 0)
+=======
                     if(deltaInBounds && !this.state.board[tile + delta].disk) {
                         //Check for the edge case
                         if(delta !== -7 && delta !== 7)
+>>>>>>> 6be58331cc3e083156f329a779c1d974ce5bbf56
                             jumpTiles.push(tile + delta)
                         //Check if there is possibility of double kill
                         
                     }
                 }
-            }
         })
 
         return jumpTiles.length > 0 ? jumpTiles : availableMoves
@@ -298,9 +302,7 @@ class Checkers extends React.Component {
         })
 
         // check if the selected disk becomes king after moving to position
-        if(!selectedDisk.isKing) {
-            selectedDisk.isKing = this.isKing(selectedDisk)
-        }
+        selectedDisk.isKing = this.isKing(selectedDisk)
 
         // move the disk to the selected tile
         board.forEach((tile) => {

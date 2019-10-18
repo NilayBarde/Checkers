@@ -227,7 +227,7 @@ class Checkers extends React.Component {
 
             // Compute if there is an enemy disk
             else
-            if(this.state.board[tile] != null) {
+            // if(this.state.board[tile] != null) {
                 if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
                     let delta =  tile - position
                     const deltaInBounds = delta >= 0 && delta <= 63
@@ -240,7 +240,7 @@ class Checkers extends React.Component {
                         
                     }
                 }
-            }
+           // }
         })
 
         return jumpTiles.length > 0 ? jumpTiles : availableMoves

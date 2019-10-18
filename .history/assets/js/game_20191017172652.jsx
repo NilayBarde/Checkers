@@ -10,9 +10,8 @@ class Checkers extends React.Component {
     constructor(props) {
         super(props)
         this.computeMoves = this.computeMoves.bind(this)
-        this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
-        
+
         // Setting up color for each tile in the board.
         let board = Array(64).fill(null).map((el, index) => {
             return {
@@ -28,40 +27,40 @@ class Checkers extends React.Component {
 
         // Assign each disk an initial position and assign that disk to
         // the corresponding tile in the board.
-        for(let i=0; i<3; i++) {
-            for(let j=0; j<8; j+=2) {
-                if(i%2 == 0) {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 8; j += 2) {
+                if (i % 2 == 0) {
                     blacks[count] = {
                         color: "black",
-                        position: 40 + 8*i + j,
+                        position: 40 + 8 * i + j,
                         isSelected: false,
                         isKing: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j + 1,
+                        position: 8 * i + j + 1,
                         isSelected: false,
                         isKing: false
                     }
-                    board[8*i + j + 1]["disk"] = whites[count]
-                    board[40 + 8*i + j]["disk"] = blacks[count]
+                    board[8 * i + j + 1]["disk"] = whites[count]
+                    board[40 + 8 * i + j]["disk"] = blacks[count]
                     count++
                 }
                 else {
                     blacks[count] = {
                         color: "black",
-                        position: 41 + 8*i + j,
+                        position: 41 + 8 * i + j,
                         isSelected: false,
                         isKing: false
                     }
                     whites[count] = {
                         color: "white",
-                        position: 8*i + j,
+                        position: 8 * i + j,
                         isSelected: false,
                         isKing: false
                     }
-                    board[8*i + j]["disk"] = whites[count]
-                    board[41 + 8*i + j]["disk"] = blacks[count]
+                    board[8 * i + j]["disk"] = whites[count]
+                    board[41 + 8 * i + j]["disk"] = blacks[count]
                     count++
                 }
             }
@@ -71,11 +70,11 @@ class Checkers extends React.Component {
             {
                 user: "user 1",
                 msg: "Message1"
-            }, 
+            },
             {
                 user: "user 2",
                 msg: "Message2"
-            }, 
+            },
             {
                 user: "user 3",
                 msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
@@ -83,11 +82,11 @@ class Checkers extends React.Component {
             {
                 user: "user 1",
                 msg: "Message1"
-            }, 
+            },
             {
                 user: "user 2",
                 msg: "Message2"
-            }, 
+            },
             {
                 user: "user 3",
                 msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
@@ -95,11 +94,11 @@ class Checkers extends React.Component {
             {
                 user: "user 1",
                 msg: "Message1"
-            }, 
+            },
             {
                 user: "user 2",
                 msg: "Message2"
-            }, 
+            },
             {
                 user: "user 3",
                 msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
@@ -112,14 +111,14 @@ class Checkers extends React.Component {
                 return (
                     <div className="message" key={index}>
                         <div className="message-text">
-                            <div className="message-user">{msg.user}</div> 
+                            <div className="message-user">{msg.user}</div>
                             <div>{msg.msg}</div>
                         </div>
                     </div>
                 )
             }),
             whites: whites,
-            blacks: blacks 
+            blacks: blacks
         }
     }
 
@@ -129,8 +128,8 @@ class Checkers extends React.Component {
         for (let i = 0; i < 8; i++) {
             let col = []
             for (let j = 0; j < 8; j++) {
-                let color = (i+j)%2 === 0 ? "white" : "red"
-                col.push(this.createTile((i*8 +j), color))
+                let color = (i + j) % 2 === 0 ? "white" : "red"
+                col.push(this.createTile((i * 8 + j), color))
 
             }
             row.push(<div className="board-row" key={i}>{col}</div>)
@@ -145,7 +144,7 @@ class Checkers extends React.Component {
                 <Tile
                     color={color}
                     disk={this.state.board[index].disk}
-                    getMoves={this.getMoves}
+                    computeMoves={this.computeMoves}
                     position={index}
                     isHighlighted={this.state.board[index].isHighlighted}
                     moveDisk={this.moveDisk}
@@ -154,7 +153,7 @@ class Checkers extends React.Component {
         )
     }
 
-    // checks if a disk is King
+    // checks if a tile is King
     isKing(disk) {
         if (disk.color == 'black' && disk.position <= 7) {
             return true;
@@ -163,17 +162,6 @@ class Checkers extends React.Component {
             return true;
         }
         return false;
-    }
-
-    hasGameEnded() {
-        const { blacks, whites, board } = this.state;
-        const noBlackDisks = blacks.length == 0;
-        const noWhiteDisks = whites.length == 0;
-        if (noBlackDisks) {
-            alert('Player 2 won!');
-        } else if (noWhiteDisks) {
-            alert('Player 1 won!');
-        }
     }
 
     // To compute the next possible moves for a selected disk
@@ -186,103 +174,93 @@ class Checkers extends React.Component {
 
         // select the clicked disk
         board.forEach((tile) => {
-            if(tile.position == position) {
-                if(tile.disk) {
+            if (tile.position == position) {
+                if (tile.disk) {
                     tile.disk.isSelected = true
                 }
             } else {
-                if(tile.disk) {
+                if (tile.disk) {
                     tile.disk.isSelected = false
                 }
             }
         })
-        
-        // get the possible moves for the current disk
-        console.log(board[position].disk.isKing)
-        if(board[position].disk.isKing) {
-            // get the possible moves for the current king disk            
-            if(board[position].disk.color === "black") 
-                possibleMoves = [position-7, position-9, position+9, position+7]
-            else 
-                possibleMoves = [position+7, position+9, position-9, position-7]
+
+        if (tile.isKing) {
+            if (board[position].disk.color === "black")
+                possibleMoves = [position - 7, position - 9]
+            else
+                possibleMoves = [position + 7, position + 9]
+
         }
         else {
             // get the possible moves for the current disk
-            if(board[position].disk.color === "black") 
-                possibleMoves = [position-7, position-9]
-            else 
-                possibleMoves = [position+7, position+9]
+            if (board[position].disk.color === "black")
+                possibleMoves = [position - 7, position - 9]
+            else
+                possibleMoves = [position + 7, position + 9]
         }
 
-        console.log(board[position].disk)
-
         // check if there's a disk at the possible move position
-        let availableMoves = [] 
+        let availableMoves = []
         let jumpTiles = []
         possibleMoves.forEach((tile) => {
-            if(this.state.board[tile] != null) {
-                if(!this.state.board[tile].disk)
-                    availableMoves.push(tile) 
-            }
+            if (!this.state.board[tile].disk)
+                availableMoves.push(tile)
 
             // Compute if there is an enemy disk
             else
-            if(this.state.board[tile] != null) {
-                if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
-                    let delta =  tile - position
-                    const deltaInBounds = delta >= 0 && delta <= 63
+                if (this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
+                    let delta = tile - position
                     //Check if the tile after that disk is empty or not
-                    if(deltaInBounds && !this.state.board[tile + delta].disk) {
-                        //Check for the edge case
-                        if(delta !== -7 && delta !== 7)
-                            jumpTiles.push(tile + delta)
-                        //Check if there is possibility of double kill
-                        
-                    }
+                    if (!this.state.board[tile + delta].disk)
+                        jumpTiles.push(tile + delta)
                 }
-            }
         })
 
-        return jumpTiles.length > 0 ? jumpTiles : availableMoves
-    }
+        if (jumpTiles.length > 0) {
+            // Highlight only the tile that is to be jumped to
+            jumpTiles.forEach(tile => board[tile].isHighlighted = true)
+        }
+        else {
+            // highlight all the available move positions for a disk
+            availableMoves.forEach(tile => board[tile].isHighlighted = true)
+        }
 
-    getMoves(position) {
-        const moves = this.computeMoves(position)
-        const board = this.state.board
-        moves.forEach(tile => board[tile].isHighlighted = true)
-        this.setState({board})
+        console.log(availableMoves, jumpTiles)
+
+        this.setState({ board })
     }
 
     moveDisk(position) {
         const { board } = this.state;
-        
+
         // remove highlight from all the previous tiles
         board.forEach(tile => tile.isHighlighted = false)
 
         // get the selected disk
         let selectedDisk
         board.forEach((tile) => {
-            if(tile.disk && tile.disk.isSelected) {
+            if (tile.disk && tile.disk.isSelected) {
                 tile.disk.isSelected = false
 
                 // Check if the enemy disk was killed
-                if(Math.abs(tile.disk.position - position) > 9) {
-                    let delta = (tile.disk.position - position)/2
+                if (Math.abs(tile.disk.position - position) > 9) {
+                    let delta = (tile.disk.position - position) / 2
                     const deadDisk = tile.disk.position - delta
                     let color = board[deadDisk].disk.color
                     board[deadDisk].disk = null
-                    
+
                     // Remove enemy disk from the white/black array
-                    if(color === "white") {
+                    if (color === "white") {
                         this.state.whites.forEach(disk => {
-                            if(disk.position === deadDisk) {
+                            if (disk.position === deadDisk) {
                                 this.state.whites.splice(this.state.whites.indexOf(disk), 1)
                             }
-                        })   
+                        })
                     }
                     else {
                         this.state.blacks.forEach(disk => {
-                            if(disk.position === deadDisk) {
+                            if (disk.position === deadDisk) {
                                 this.state.blacks.splice(this.state.blacks.indexOf(disk), 1)
                             }
                         })
@@ -298,8 +276,8 @@ class Checkers extends React.Component {
         })
 
         // check if the selected disk becomes king after moving to position
-        if(!selectedDisk.isKing) {
-            selectedDisk.isKing = this.isKing(selectedDisk)
+        if (this.isKing(selectedDisk)) {
+            selectedDisk.isKing = true;
         }
 
         // move the disk to the selected tile
@@ -308,7 +286,7 @@ class Checkers extends React.Component {
                 tile.disk = selectedDisk
             }
         })
-        this.hasGameEnded();
+
         this.setState({ board })
     }
 
@@ -321,12 +299,12 @@ class Checkers extends React.Component {
                         <div className="board">{this.createBoard()}</div>
 
                         <div className="row action-row">
-                        <div className="column">
-                            <button onClick={() => {this.demo()}}>Quit Game</button>
-                        </div>
-                        <div className="column">
-                            <button>Raise a draw</button>
-                        </div>
+                            <div className="column">
+                                <button onClick={() => { this.demo() }}>Quit Game</button>
+                            </div>
+                            <div className="column">
+                                <button>Raise a draw</button>
+                            </div>
                         </div>
                     </div>
 
@@ -336,8 +314,8 @@ class Checkers extends React.Component {
                             {this.state.message}
                         </div>
                         <div className="chat-row">
-                            <input type="text" className="chat-input"/>
-                            <button className="chat-btn">Send</button>    
+                            <input type="text" className="chat-input" />
+                            <button className="chat-btn">Send</button>
                         </div>
                     </div>
                 </div>
@@ -348,12 +326,12 @@ class Checkers extends React.Component {
 
 // Component for tile.
 function Tile(props) {
-    if(props.color == "red") {
-        if(props.disk) {
+    if (props.color == "red") {
+        if (props.disk) {
             return (
                 <div className="tile-red">
                     <Disk
-                        getMoves={props.getMoves}
+                        computeMoves={props.computeMoves}
                         color={props.disk.color}
                         disk={props.disk}
                         position={props.position}
@@ -362,17 +340,17 @@ function Tile(props) {
             )
         } else {
             const { isHighlighted } = props;
-            const tile = isHighlighted? 
-                <div className="tile-highlighted" onClick={() => {props.moveDisk(props.position)}}/> : <div className="tile-red"/>;
+            const tile = isHighlighted ?
+                <div className="tile-highlighted" onClick={() => { props.moveDisk(props.position) }} /> : <div className="tile-red" />;
             return tile;
         }
     }
     else {
-        if(props.disk) {
+        if (props.disk) {
             return (
                 <div className="tile-white">
                     <Disk
-                        getMoves={props.getMoves}
+                        computeMoves={props.computeMoves}
                         color={props.disk.color}
                         disk={props.disk}
                         position={props.position}
@@ -387,27 +365,28 @@ function Tile(props) {
 
 // Component for disk.
 function Disk(props) {
-    if(props.color == "black") {
+    if (props.color == "black") {
         if (props.disk.isKing) {
             return (
-                <div className="black-disk-king" onClick={() => {props.getMoves(props.position)}}></div>
+                <div className="black-disk-king" onClick={() => { props.computeKingMoves(props.position) }}></div>
             )
         } else {
             return (
-                <div className="black-disk" onClick={() => {props.getMoves(props.position)}}></div>
+                <div className="black-disk" onClick={() => { props.computeMoves(props.position) }}></div>
             )
         }
-        
+
     }
     else {
         if (props.disk.isKing) {
             return (
-                <div className="white-disk-king" onClick={() => props.getMoves(props.position)}></div>
+                <div className="white-disk-king" onClick={() => props.computeKingMoves(props.position)}></div>
             )
         } else {
             return (
-                <div className="white-disk" onClick={() => props.getMoves(props.position)}></div>
+                <div className="white-disk" onClick={() => props.computeMoves(props.position)}></div>
             )
         }
+
     }
 }

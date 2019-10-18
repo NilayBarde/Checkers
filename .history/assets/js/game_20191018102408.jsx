@@ -227,22 +227,19 @@ class Checkers extends React.Component {
 
             // Compute if there is an enemy disk
             else
-            if(this.state.board[tile] != null) {
-                if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
-                    let delta =  tile - position
-                    const deltaInBounds = delta >= 0 && delta <= 63
-                    //Check if the tile after that disk is empty or not
-                    if(deltaInBounds && !this.state.board[tile + delta].disk) {
-                        //Check for the edge case
-                        if(delta !== -7 && delta !== 7)
-                            jumpTiles.push(tile + delta)
-                        //Check if there is possibility of double kill
-                        
-                    }
+            if(this.state.board[tile].disk.color !== this.state.board[position].disk.color) {
+                let delta =  tile - position
+                const deltaInBounds = delta >= 0 && delta <= 63
+                //Check if the tile after that disk is empty or not
+                if(deltaInBounds && !this.state.board[tile + delta].disk) {
+                    //Check for the edge case
+                    if(delta !== -7 && delta !== 7)
+                        jumpTiles.push(tile + delta)
+                    //Check if there is possibility of double kill
+                    
                 }
             }
-        })
-
+    })
         return jumpTiles.length > 0 ? jumpTiles : availableMoves
     }
 

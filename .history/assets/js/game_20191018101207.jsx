@@ -202,9 +202,9 @@ class Checkers extends React.Component {
         if(board[position].disk.isKing) {
             // get the possible moves for the current king disk            
             if(board[position].disk.color === "black") 
-                possibleMoves = [position-7, position-9, position+9, position+7]
-            else 
-                possibleMoves = [position+7, position+9, position-9, position-7]
+            possibleMoves = [position-7, position-9, position+9, position+7]
+        else 
+            possibleMoves = [position+7, position+9, position-9, position-7]
         }
         else {
             // get the possible moves for the current disk
@@ -292,15 +292,14 @@ class Checkers extends React.Component {
                 // Move the current disk to appropriate position
                 tile.disk.position = position
                 selectedDisk = tile.disk
+                selectedDisk.isKing = tile.disk.isKing
                 tile.disk = null
                 console.log(this.state)
             }
         })
 
         // check if the selected disk becomes king after moving to position
-        if(!selectedDisk.isKing) {
-            selectedDisk.isKing = this.isKing(selectedDisk)
-        }
+        selectedDisk.isKing = this.isKing(selectedDisk)
 
         // move the disk to the selected tile
         board.forEach((tile) => {
