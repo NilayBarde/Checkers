@@ -221,7 +221,6 @@ class Checkers extends React.Component {
     computeMoves(position) {
         let { board } = this.state;
         let possibleMoves = this.getPossibleMoves(board[position].disk, position);
-        
         // check if there's a disk at the possible move position
         let availableMoves = []
         let jumpTiles = []
@@ -234,10 +233,12 @@ class Checkers extends React.Component {
                 if(board[tile].disk.color !== board[position].disk.color) {
                     let delta =  tile - position
                     //Check if the tile after that disk is empty or not
-                    if(!board[tile + delta].disk) {
-                        //Check for the left and right edge
-                        if((tile+1)%8 !== 0 && tile%8 !==0)
-                            jumpTiles.push(tile + delta)                        
+                    if(tile + delta >= 0 && tile+delta <=63) {
+                        if(!board[tile + delta].disk) {
+                            //Check for the left and right edge
+                            if((tile+1)%8 !== 0 && tile%8 !==0)
+                                jumpTiles.push(tile + delta)                        
+                        }
                     }
                 }
             }
