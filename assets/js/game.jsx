@@ -119,7 +119,8 @@ class Checkers extends React.Component {
                 )
             }),
             whites: whites,
-            blacks: blacks
+            blacks: blacks,
+            doubleKill: []
         }
     }
 
@@ -250,14 +251,12 @@ class Checkers extends React.Component {
                 const tempMoves = this.getPossibleMoves(board[position].disk, tile)
                 //FIND ENEMY                 
                 tempMoves.forEach(tempTile => {
-                    console.log(tempMoves)
                     if(board[tempTile].disk) {
                         if(board[tempTile].disk.color !== board[position].disk.color) {
                             let delta = 2 * (tempTile - tile)
                             //CHECK IF TILE AFTER THE ENEMY IS EMPTY
                             if(tile + delta > 0 && tile + delta < 63) {
                                 if(!board[tile + delta].disk) {
-                                console.log("test", board[delta + tile])
                                     if((tile + 1) % 8 !== 0 && tile % 8 !== 0)
                                         doubleKills.push(tile + delta)
                                 }
@@ -268,9 +267,11 @@ class Checkers extends React.Component {
             })
         }
 
-        console.log(doubleKills)
-        if(doubleKills.length > 0)
-            return doubleKills
+        // console.log()
+        if(doubleKills.length > 0) {
+            this.setState({doubleKill: jumpTiles.concat(doubleKills)})
+            return jumpTiles.concat(doubleKills)
+        }
         else
             return jumpTiles.length > 0 ? jumpTiles : availableMoves
     }
@@ -299,14 +300,11 @@ class Checkers extends React.Component {
         this.setState({ board })
     }
 
-    moveDisk(position) {
-        const { board } = this.state;
-
-        // remove highlight from all the previous tiles
-        board.forEach(tile => tile.isHighlighted = false)
-
+    shiftDisk(position) {
+        const {board} = this.state
         // get the selected disk
         let selectedDisk
+        console.log(position)
         board.forEach((tile) => {
             if (tile.disk && tile.disk.isSelected) {
                 tile.disk.isSelected = false
@@ -354,6 +352,23 @@ class Checkers extends React.Component {
                 tile.disk = selectedDisk
             }
         })
+    }
+
+    moveDisk(position) {
+        const { board, doubleKill } = this.state;
+
+        // remove highlight from all the previous tiles
+        board.forEach(tile => tile.isHighlighted = false)
+        
+        if(doubleKill.length > 0) {
+            this.shiftDisk(doubleKill[0])
+            board[doubleKill[0]].disk.isSelected = true
+            this.shiftDisk(doubleKill[1])
+            this.setState({doubleKill: []})     
+        }
+        else {
+            this.shiftDisk(position)
+        }
         this.hasGameEnded();
         this.setState({ board })
     }
