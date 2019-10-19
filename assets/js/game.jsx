@@ -168,12 +168,38 @@ class Checkers extends React.Component {
 
     hasGameEnded() {
         const { blacks, whites, board } = this.state;
+
+        // check if there are no white/black disks remaining on the board
         const noBlackDisks = blacks.length == 0;
         const noWhiteDisks = whites.length == 0;
         if (noBlackDisks) {
             alert('Player 2 won!');
         } else if (noWhiteDisks) {
             alert('Player 1 won!');
+        }
+
+        // check if there are no possible moves
+        const noPossibleMovesBlack = false;
+        const noPossibleMovesWhite = false;
+        board.forEach((tile) => {
+            if (tile.disk && tile.disk.color == 'black') {
+                const moves = this.getPossibleMoves(tile.disk, tile.position);
+                if (moves && moves.length > 0) {
+                    noPossibleMovesBlack = true;
+                }
+            } else if (tile.disk && tile.disk.color == 'white') {
+                const moves = this.getPossibleMoves(tile.disk, tile.position);
+                if (moves && moves.length > 0) {
+                    noPossibleMovesWhite = true;
+                }
+            }
+        });
+        if (noPossibleMovesBlack || noPossibleMovesWhite) {
+            if (noPossibleMovesBlack) {
+                alert('No possible moves for Player 1, Player 2 wins!');
+            } else if (noPossibleMovesWhite) {
+                alert('No possible moves for Player 2, Player 1 wins!');
+            }
         }
     }
 
