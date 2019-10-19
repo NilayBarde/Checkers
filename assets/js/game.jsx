@@ -182,10 +182,36 @@ class Checkers extends React.Component {
         let possibleMoves
         if (disk.isKing) {
             // get the possible moves for the current king disk            
-            if (disk.color === "black")
+            if (disk.color === "black") {
                 possibleMoves = [position - 7, position - 9, position + 9, position + 7]
-            else
+
+                // To ensure that it return only position from the next row
+                possibleMoves = possibleMoves.filter(el => {
+                    let allowedRow = ((position - (position%8)) / 8) - 1
+                    const lowerBound = allowedRow * 8
+                    const upperBound = allowedRow*8 + 7
+                    const lowerBoundBottom = (allowedRow + 2) * 8
+                    const upperBoundBottom = (allowedRow + 2) * 8 + 7
+                    if((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom) && el >= 0 && el <= 63)
+                        return el
+                })
+                
+            }
+            else {
                 possibleMoves = [position + 7, position + 9, position - 9, position - 7]
+
+                // To ensure that it return only position from the next row
+                possibleMoves = possibleMoves.filter(el => {
+                    let allowedRow = ((position - (position%8)) / 8) - 1
+                    const lowerBound = allowedRow * 8
+                    const upperBound = allowedRow*8 + 7
+                    const lowerBoundBottom = (allowedRow + 2) * 8
+                    const upperBoundBottom = (allowedRow + 2) * 8 + 7
+                    if((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom) && el >= 0 && el <= 63)
+                        return el
+                })
+                
+            }
         }
         else {
             // get the possible moves for the current disk
@@ -243,6 +269,7 @@ class Checkers extends React.Component {
                 }
             }
         })
+    
 
         //Check if there is possibility of double kill
         let doubleKills = []

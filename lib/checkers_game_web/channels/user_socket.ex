@@ -2,6 +2,7 @@ defmodule CheckersGameWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
+  channel "chat_room:*", CheckersGameWeb.ChatRoomChannel
   # channel "room:*", CheckersGameWeb.RoomChannel
 
   # Socket params are passed from the client and can
