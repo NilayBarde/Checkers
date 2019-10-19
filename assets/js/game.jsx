@@ -257,7 +257,8 @@ class Checkers extends React.Component {
                             //CHECK IF TILE AFTER THE ENEMY IS EMPTY
                             if(tile + delta > 0 && tile + delta < 63) {
                                 if(!board[tile + delta].disk) {
-                                    if((tile + 1) % 8 !== 0 && tile % 8 !== 0)
+                                    console.log(tile+1)
+                                    if((tempTile + 1) % 8 !== 0 && tempTile % 8 !== 0)
                                         doubleKills.push(tile + delta)
                                 }
                             }
@@ -278,7 +279,7 @@ class Checkers extends React.Component {
 
     getMoves(position) {
         const board = this.state.board
-
+        this.setState({doubleKill: []})
         // remove highlight from all the previous tiles
         board.forEach(tile => tile.isHighlighted = false)
 
@@ -356,15 +357,19 @@ class Checkers extends React.Component {
 
     moveDisk(position) {
         const { board, doubleKill } = this.state;
-
         // remove highlight from all the previous tiles
         board.forEach(tile => tile.isHighlighted = false)
         
         if(doubleKill.length > 0) {
             this.shiftDisk(doubleKill[0])
             board[doubleKill[0]].disk.isSelected = true
-            this.shiftDisk(doubleKill[1])
-            this.setState({doubleKill: []})     
+            if(doubleKill.indexOf(position) != -1) {
+                this.shiftDisk(doubleKill[doubleKill.indexOf(position)])
+            }
+            else {
+                this.shiftDisk(doubleKill[1])
+            }     
+            this.setState({doubleKill: []})
         }
         else {
             this.shiftDisk(position)
