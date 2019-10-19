@@ -196,7 +196,7 @@ class Checkers extends React.Component {
                     let allowedRow = ((position - (position%8)) / 8) - 1
                     const lowerBound = allowedRow * 8
                     const upperBound = allowedRow*8 + 7
-                    if(el >= lowerBound && el <= upperBound)
+                    if(el >= lowerBound && el <= upperBound && el >= 0 && el <= 63)
                         return el
                 })
             }
@@ -208,7 +208,7 @@ class Checkers extends React.Component {
                     let allowedRow = ((position - (position%8)) / 8) + 1
                     const lowerBound = allowedRow * 8
                     const upperBound = allowedRow*8 + 7
-                    if(el >= lowerBound && el <= upperBound)
+                    if(el >= lowerBound && el <= upperBound && el >= 0 && el <= 63)
                         return el
                 })
             }
@@ -248,17 +248,17 @@ class Checkers extends React.Component {
             jumpTiles.forEach(tile => {
                 //GET POSSIBLE MOVES
                 const tempMoves = this.getPossibleMoves(board[position].disk, tile)
-                console.log(tempMoves)
                 //FIND ENEMY                 
                 tempMoves.forEach(tempTile => {
+                    console.log(tempMoves)
                     if(board[tempTile].disk) {
                         if(board[tempTile].disk.color !== board[position].disk.color) {
                             let delta = 2 * (tempTile - tile)
                             //CHECK IF TILE AFTER THE ENEMY IS EMPTY
-                            if(tile + delta >= 0 && tile + delta <= 63) {
-                                console.log(board[tile + delta])
+                            if(tile + delta > 0 && tile + delta < 63) {
                                 if(!board[tile + delta].disk) {
-                                    if((tile + 1) % 8 !== 0 && tile % 8 == 0)
+                                console.log("test", board[delta + tile])
+                                    if((tile + 1) % 8 !== 0 && tile % 8 !== 0)
                                         doubleKills.push(tile + delta)
                                 }
                             }
@@ -269,7 +269,6 @@ class Checkers extends React.Component {
         }
 
         console.log(doubleKills)
-
         if(doubleKills.length > 0)
             return doubleKills
         else
