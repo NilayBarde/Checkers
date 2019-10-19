@@ -192,7 +192,10 @@ class Checkers extends React.Component {
                     const upperBound = allowedRow*8 + 7
                     const lowerBoundBottom = (allowedRow + 2) * 8
                     const upperBoundBottom = (allowedRow + 2) * 8 + 7
-                    if((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom) && el >= 0 && el <= 63)
+                    console.log("Possible Move" + el)
+                    console.log("Lower Bound Bottom" + lowerBoundBottom);
+                    console.log("Upper Bound Bottom" + upperBoundBottom);
+                    if(((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom)) && el >= 0 && el <= 63)
                         return el
                 })
                 
@@ -207,7 +210,7 @@ class Checkers extends React.Component {
                     const upperBound = allowedRow*8 + 7
                     const lowerBoundBottom = (allowedRow + 2) * 8
                     const upperBoundBottom = (allowedRow + 2) * 8 + 7
-                    if((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom) && el >= 0 && el <= 63)
+                    if(((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom)) && el >= 0 && el <= 63)
                         return el
                 })
                 
