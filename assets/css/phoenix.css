@@ -132,3 +132,14 @@ header nav a {
     margin: 2rem 1rem;
   }
 }
+
+.column-1 {
+  width: 70%;
+}
+
+.column-2 { 
+  width: 30%;
+  display: flex;
+  align-content: space-around;
+  justify-content: space-around;
+}

@@ -162,7 +162,7 @@ class Checkers extends React.Component {
             <div>
                 <div className="row main-row">
                     {/* GAME BOARD */}
-                    <div className="column">
+                    <div className="column-1">
                         <div className="board">{this.createBoard()}</div>
 
                         <div className="row action-row">
@@ -176,7 +176,7 @@ class Checkers extends React.Component {
                     </div>
 
                     {/* CHAT ROOM */}
-                    <div className="column chat-room">
+                    <div className="column-2 chat-room">
                         <div className="messages">
                             {this.renderChatMessages()}
                         </div>
