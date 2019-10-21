@@ -1,12 +1,17 @@
 defmodule CheckersGame.MoveDisk do
 
   def move_disk(game, position) do
+    # If there is a chance of double kill
     if length(game.doubleKill) > 0 do
+
+      # First capture first tile
       result = shift_disk(game, Enum.at(game.doubleKill, 0))
       board = result.board
       tile = IO.inspect set_is_selected(board, Enum.at(game.doubleKill, 0), true)
       board = List.replace_at(board, tile.position, tile)
       game = Map.merge(game, %{board: board, whites: result.whites, blacks: result.blacks})
+
+      # Capture second tile
       shift_disk(game, position)
     else
       shift_disk(game, position)

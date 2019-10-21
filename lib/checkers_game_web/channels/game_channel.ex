@@ -7,7 +7,6 @@ defmodule CheckersGameWeb.GameChannel do
   def join("game:" <> name, _payload, socket) do
     game = BackupAgent.get(name) || Game.new()
     BackupAgent.put(name, game)
-
     socket = socket
     |> assign(:game, game)
     |> assign(:name, name)
