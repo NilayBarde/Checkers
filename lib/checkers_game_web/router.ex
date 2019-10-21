@@ -19,7 +19,7 @@ defmodule CheckersGameWeb.Router do
     get "/", PageController, :index
 
     # Route for the game.
-    get "/game", PageController, :game
+    get "/game/:name", PageController, :game
   end
 
   # Other scopes may use custom stacks.

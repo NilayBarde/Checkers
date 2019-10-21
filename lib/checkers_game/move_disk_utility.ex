@@ -106,9 +106,7 @@ defmodule CheckersGame.MoveDisk do
       deadDisk = disk.position - delta
       color = Enum.at(game.board, deadDisk).disk.color
       board = kill_enemy(game.board, deadDisk)
-      IO.inspect color
       if color == "white" do
-        IO.puts "white dead"
         whites = remove_disk(deadDisk, game.whites)
         blacks = game.blacks
         %{
@@ -117,7 +115,6 @@ defmodule CheckersGame.MoveDisk do
          blacks: blacks
         }
       else
-        IO.puts "black dead"
         whites = game.whites
         blacks = remove_disk(deadDisk, game.blacks)
         %{

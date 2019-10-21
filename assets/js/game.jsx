@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import '../css/game'
 
-export default function gameInit(root) {
-    ReactDOM.render(<Checkers />, root)
+export default function gameInit(root, gameName, channel) {
+    ReactDOM.render(<Checkers gameName={gameName} channel={channel}/>, root)
 }
 
 class Checkers extends React.Component {
@@ -12,8 +12,14 @@ class Checkers extends React.Component {
         this.computeMoves = this.computeMoves.bind(this)
         this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
+        
 
-        // Setting up color for each tile in the board.
+        this.channel = props.channel
+        this.channel.join()
+            .receive("ok", resp => this.updateState(resp.state))
+            .receive("error", error => console.log("cant connect", error))
+
+        // creating the initial board array
         let board = Array(64).fill(null).map((el, index) => {
             return {
                 position: index,
@@ -21,107 +27,17 @@ class Checkers extends React.Component {
             }
         })
 
-        let blacks = Array(12).fill(null)
-        let whites = Array(12).fill(null)
-
-        let count = 0;
-
-        // Assign each disk an initial position and assign that disk to
-        // the corresponding tile in the board.
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 8; j += 2) {
-                if (i % 2 == 0) {
-                    blacks[count] = {
-                        color: "black",
-                        position: 40 + 8 * i + j,
-                        isSelected: false,
-                        isKing: false
-                    }
-                    whites[count] = {
-                        color: "white",
-                        position: 8 * i + j + 1,
-                        isSelected: false,
-                        isKing: false
-                    }
-                    board[8 * i + j + 1]["disk"] = whites[count]
-                    board[40 + 8 * i + j]["disk"] = blacks[count]
-                    count++
-                }
-                else {
-                    blacks[count] = {
-                        color: "black",
-                        position: 41 + 8 * i + j,
-                        isSelected: false,
-                        isKing: false
-                    }
-                    whites[count] = {
-                        color: "white",
-                        position: 8 * i + j,
-                        isSelected: false,
-                        isKing: false
-                    }
-                    board[8 * i + j]["disk"] = whites[count]
-                    board[41 + 8 * i + j]["disk"] = blacks[count]
-                    count++
-                }
-            }
-        }
-
-        let msgs = [
-            {
-                user: "user 1",
-                msg: "Message1"
-            },
-            {
-                user: "user 2",
-                msg: "Message2"
-            },
-            {
-                user: "user 3",
-                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
-            },
-            {
-                user: "user 1",
-                msg: "Message1"
-            },
-            {
-                user: "user 2",
-                msg: "Message2"
-            },
-            {
-                user: "user 3",
-                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
-            },
-            {
-                user: "user 1",
-                msg: "Message1"
-            },
-            {
-                user: "user 2",
-                msg: "Message2"
-            },
-            {
-                user: "user 3",
-                msg: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae inventore, quod voluptas alias excepturi sit iure at mollitia accusantium provident deleniti dolor ipsum facilis nesciunt quisquam ut facere aliquam laudantium."
-            },
-        ]
-
         this.state = {
             board: board,
-            message: msgs.map((msg, index) => {
-                return (
-                    <div className="message" key={index}>
-                        <div className="message-text">
-                            <div className="message-user">{msg.user}</div>
-                            <div>{msg.msg}</div>
-                        </div>
-                    </div>
-                )
-            }),
-            whites: whites,
-            blacks: blacks,
+            message: [],
+            whites: [],
+            blacks: [],
             doubleKill: []
         }
+    }
+
+    updateState(state) {
+        this.setState(state)
     }
 
     // To create the board and populate it with tiles.
@@ -203,75 +119,6 @@ class Checkers extends React.Component {
         // }
     }
 
-    // get the possible moves for the current disk
-    getPossibleMoves(disk, position) {
-        let possibleMoves
-        if (disk.isKing) {
-            // get the possible moves for the current king disk            
-            if (disk.color === "black") {
-                possibleMoves = [position - 7, position - 9, position + 9, position + 7]
-
-                // To ensure that it return only position from the next row
-                possibleMoves = possibleMoves.filter(el => {
-                    let allowedRow = ((position - (position%8)) / 8) - 1
-                    const lowerBound = allowedRow * 8
-                    const upperBound = allowedRow*8 + 7
-                    const lowerBoundBottom = (allowedRow + 2) * 8
-                    const upperBoundBottom = (allowedRow + 2) * 8 + 7
-                    console.log("Possible Move" + el)
-                    console.log("Lower Bound Bottom" + lowerBoundBottom);
-                    console.log("Upper Bound Bottom" + upperBoundBottom);
-                    if(((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom)) && el >= 0 && el <= 63)
-                        return el
-                })
-                
-            }
-            else {
-                possibleMoves = [position + 7, position + 9, position - 9, position - 7]
-
-                // To ensure that it return only position from the next row
-                possibleMoves = possibleMoves.filter(el => {
-                    let allowedRow = ((position - (position%8)) / 8) - 1
-                    const lowerBound = allowedRow * 8
-                    const upperBound = allowedRow*8 + 7
-                    const lowerBoundBottom = (allowedRow + 2) * 8
-                    const upperBoundBottom = (allowedRow + 2) * 8 + 7
-                    if(((el >= lowerBound && el <= upperBound) || (el >= lowerBoundBottom && el <= upperBoundBottom)) && el >= 0 && el <= 63)
-                        return el
-                })
-                
-            }
-        }
-        else {
-            // get the possible moves for the current disk
-            if (disk.color === "black") {
-                possibleMoves = [position - 7, position - 9]
-                
-                // To ensure that it return only position from the next row
-                possibleMoves = possibleMoves.filter(el => {
-                    let allowedRow = ((position - (position%8)) / 8) - 1
-                    const lowerBound = allowedRow * 8
-                    const upperBound = allowedRow*8 + 7
-                    if(el >= lowerBound && el <= upperBound && el >= 0 && el <= 63)
-                        return el
-                })
-            }
-            else {
-                possibleMoves = [position + 7, position + 9]
-
-                // To ensure that it return only position from the next row
-                possibleMoves = possibleMoves.filter(el => {
-                    let allowedRow = ((position - (position%8)) / 8) + 1
-                    const lowerBound = allowedRow * 8
-                    const upperBound = allowedRow*8 + 7
-                    if(el >= lowerBound && el <= upperBound && el >= 0 && el <= 63)
-                        return el
-                })
-            }
-        }
-        return possibleMoves
-    }
-
     // To compute the next possible moves for a selected disk
     computeMoves(position) {
         let { board } = this.state;
@@ -335,27 +182,11 @@ class Checkers extends React.Component {
     }
 
     getMoves(position) {
-        const board = this.state.board
-        this.setState({doubleKill: []})
-        // remove highlight from all the previous tiles
-        board.forEach(tile => tile.isHighlighted = false)
-
-        // select the clicked disk
-        board.forEach((tile) => {
-            if (tile.position == position) {
-                if (tile.disk) {
-                    tile.disk.isSelected = true
-                }
-            } else {
-                if (tile.disk) {
-                    tile.disk.isSelected = false
-                }
-            }
-        })
-
-        const moves = this.computeMoves(position)
-        moves.forEach(tile => board[tile].isHighlighted = true)
-        this.setState({ board })
+        this.channel.push("get_moves", {position})
+            .receive("ok", resp => {
+                this.setState({board: resp.state.board, doubleKill: resp.state.doubleKill})
+                console.log(resp)
+            })
     }
 
     shiftDisk(position) {
@@ -413,26 +244,33 @@ class Checkers extends React.Component {
     }
 
     moveDisk(position) {
-        const { board, doubleKill } = this.state;
-        // remove highlight from all the previous tiles
-        board.forEach(tile => tile.isHighlighted = false)
         
-        if(doubleKill.length > 0) {
-            this.shiftDisk(doubleKill[0])
-            board[doubleKill[0]].disk.isSelected = true
-            if(doubleKill.indexOf(position) != -1) {
-                this.shiftDisk(doubleKill[doubleKill.indexOf(position)])
-            }
-            else {
-                this.shiftDisk(doubleKill[1])
-            }     
-            this.setState({doubleKill: []})
-        }
-        else {
-            this.shiftDisk(position)
-        }
-        this.hasGameEnded();
-        this.setState({ board })
+        this.channel.push("move_disk", {position})
+            .receive("ok", resp => {
+                console.log(resp)
+                this.setState(resp.state)
+                console.log(this.state)
+            })
+        // const { board, doubleKill } = this.state;
+        // // remove highlight from all the previous tiles
+        // board.forEach(tile => tile.isHighlighted = false)
+        
+        // if(doubleKill.length > 0) {
+        //     this.shiftDisk(doubleKill[0])
+        //     board[doubleKill[0]].disk.isSelected = true
+        //     if(doubleKill.indexOf(position) != -1) {
+        //         this.shiftDisk(doubleKill[doubleKill.indexOf(position)])
+        //     }
+        //     else {
+        //         this.shiftDisk(doubleKill[1])
+        //     }     
+        //     this.setState({doubleKill: []})
+        // }
+        // else {
+        //     this.shiftDisk(position)
+        // }
+        // this.hasGameEnded();
+        // this.setState({ board })
     }
 
     render() {

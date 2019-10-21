@@ -16,11 +16,14 @@ import "phoenix_html"
 
 import gameInit from './game'
 
-// import socket from "./socket"
+import socket from "./socket"
+
 
 (() => {
     let game = document.getElementById("game-root")
     if(game) {
-        gameInit(game)
+        let gameName = window.gameName
+        let channel = socket.channel("game:" + gameName)
+        gameInit(game, gameName, channel)
     }
 })()
