@@ -9,7 +9,6 @@ export default function gameInit(root, gameName, channel) {
 class Checkers extends React.Component {
     constructor(props) {
         super(props)
-        this.computeMoves = this.computeMoves.bind(this)
         this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
         
@@ -71,17 +70,6 @@ class Checkers extends React.Component {
         )
     }
 
-    // checks if a disk is King
-    isKing(disk) {
-        if (disk.color == 'black' && disk.position <= 7) {
-            return true;
-        }
-        if (disk.color == 'white' && disk.position >= 56) {
-            return true;
-        }
-        return false;
-    }
-
     hasGameEnded() {
         const { blacks, whites, board } = this.state;
 
@@ -119,128 +107,12 @@ class Checkers extends React.Component {
         // }
     }
 
-    // To compute the next possible moves for a selected disk
-    computeMoves(position) {
-        let { board } = this.state;
-        let possibleMoves = this.getPossibleMoves(board[position].disk, position);
-        // check if there's a disk at the possible move position
-        let availableMoves = []
-        let jumpTiles = []
-        possibleMoves.forEach((tile) => {
-            if(!board[tile].disk)
-                availableMoves.push(tile) 
-
-            // Compute if there is an enemy disk
-            else {
-                if(board[tile].disk.color !== board[position].disk.color) {
-                    let delta =  tile - position
-                    //Check if the tile after that disk is empty or not
-                    if(tile + delta >= 0 && tile+delta <=63) {
-                        if(!board[tile + delta].disk) {
-                            //Check for the left and right edge
-                            if((tile+1)%8 !== 0 && tile%8 !==0)
-                                jumpTiles.push(tile + delta)                        
-                        }
-                    }
-                }
-            }
-        })
-    
-
-        //Check if there is possibility of double kill
-        let doubleKills = []
-        if(jumpTiles.length > 0) {
-            jumpTiles.forEach(tile => {
-                //GET POSSIBLE MOVES
-                const tempMoves = this.getPossibleMoves(board[position].disk, tile)
-                //FIND ENEMY                 
-                tempMoves.forEach(tempTile => {
-                    if(board[tempTile].disk) {
-                        if(board[tempTile].disk.color !== board[position].disk.color) {
-                            let delta = 2 * (tempTile - tile)
-                            //CHECK IF TILE AFTER THE ENEMY IS EMPTY
-                            if(tile + delta > 0 && tile + delta < 63) {
-                                if(!board[tile + delta].disk) {
-                                    console.log(tile+1)
-                                    if((tempTile + 1) % 8 !== 0 && tempTile % 8 !== 0)
-                                        doubleKills.push(tile + delta)
-                                }
-                            }
-                        }
-                    }
-                })
-            })
-        }
-
-        // console.log()
-        if(doubleKills.length > 0) {
-            this.setState({doubleKill: jumpTiles.concat(doubleKills)})
-            return jumpTiles.concat(doubleKills)
-        }
-        else
-            return jumpTiles.length > 0 ? jumpTiles : availableMoves
-    }
-
     getMoves(position) {
         this.channel.push("get_moves", {position})
             .receive("ok", resp => {
                 this.setState({board: resp.state.board, doubleKill: resp.state.doubleKill})
                 console.log(resp)
             })
-    }
-
-    shiftDisk(position) {
-        const {board} = this.state
-        // get the selected disk
-        let selectedDisk
-        console.log(position)
-        board.forEach((tile) => {
-            if (tile.disk && tile.disk.isSelected) {
-                tile.disk.isSelected = false
-
-                // Check if the enemy disk was killed
-                if (Math.abs(tile.disk.position - position) > 9) {
-                    let delta = (tile.disk.position - position) / 2
-                    const deadDisk = tile.disk.position - delta
-                    let color = board[deadDisk].disk.color
-                    board[deadDisk].disk = null
-
-                    // Remove enemy disk from the white/black array
-                    if (color === "white") {
-                        this.state.whites.forEach(disk => {
-                            if (disk.position === deadDisk) {
-                                this.state.whites.splice(this.state.whites.indexOf(disk), 1)
-                            }
-                        })
-                    }
-                    else {
-                        this.state.blacks.forEach(disk => {
-                            if (disk.position === deadDisk) {
-                                this.state.blacks.splice(this.state.blacks.indexOf(disk), 1)
-                            }
-                        })
-                    }
-                }
-
-                // Move the current disk to appropriate position
-                tile.disk.position = position
-                selectedDisk = tile.disk
-                tile.disk = null
-                console.log(this.state)
-            }
-        })
-
-        // check if the selected disk becomes king after moving to position
-        if (!selectedDisk.isKing) {
-            selectedDisk.isKing = this.isKing(selectedDisk)
-        }
-
-        // move the disk to the selected tile
-        board.forEach((tile) => {
-            if (tile.position == position) {
-                tile.disk = selectedDisk
-            }
-        })
     }
 
     moveDisk(position) {
@@ -251,26 +123,6 @@ class Checkers extends React.Component {
                 this.setState(resp.state)
                 console.log(this.state)
             })
-        // const { board, doubleKill } = this.state;
-        // // remove highlight from all the previous tiles
-        // board.forEach(tile => tile.isHighlighted = false)
-        
-        // if(doubleKill.length > 0) {
-        //     this.shiftDisk(doubleKill[0])
-        //     board[doubleKill[0]].disk.isSelected = true
-        //     if(doubleKill.indexOf(position) != -1) {
-        //         this.shiftDisk(doubleKill[doubleKill.indexOf(position)])
-        //     }
-        //     else {
-        //         this.shiftDisk(doubleKill[1])
-        //     }     
-        //     this.setState({doubleKill: []})
-        // }
-        // else {
-        //     this.shiftDisk(position)
-        // }
-        // this.hasGameEnded();
-        // this.setState({ board })
     }
 
     render() {
