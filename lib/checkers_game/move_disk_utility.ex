@@ -14,6 +14,24 @@ defmodule CheckersGame.MoveDisk do
 
     # Update all the values
     board = result.board
+    whites = result.whites
+    |> Enum.map(fn el ->
+      if(tile.position == el.position) do
+        Map.put(el, :position, position)
+      else
+        el
+      end
+    end)
+
+    blacks = result.blacks
+    |> Enum.map(fn el ->
+      if(tile.position == el.position) do
+        Map.put(el, :position, position)
+      else
+        el
+      end
+    end)
+
     selectedDisk = Map.put(selectedDisk, :position, position)
     tile = Map.put(tile, :disk, nil)
 
@@ -30,8 +48,8 @@ defmodule CheckersGame.MoveDisk do
     |> remove_highlights()
     %{
       board: board,
-      whites: result.whites,
-      blacks: result.blacks
+      whites: whites,
+      blacks: blacks
     }
   end
 
@@ -57,10 +75,11 @@ defmodule CheckersGame.MoveDisk do
 
   # To remove disk from either whites or blacks
   def remove_disk(position, deck) do
-    index = Enum.find_index(deck, fn el ->
-      el.position == position
+    Enum.filter(deck, fn el ->
+      if el.position !== position do
+        el
+      end
     end)
-    List.delete(deck, index)
   end
 
   # To find the selected disk from the entire board
@@ -85,9 +104,11 @@ defmodule CheckersGame.MoveDisk do
     if abs(disk.position - position) > 9 do
       delta = div(disk.position - position, 2)
       deadDisk = disk.position - delta
-      color = Enum.at(game.board, deadDisk)
+      color = Enum.at(game.board, deadDisk).disk.color
       board = kill_enemy(game.board, deadDisk)
+      IO.inspect color
       if color == "white" do
+        IO.puts "white dead"
         whites = remove_disk(deadDisk, game.whites)
         blacks = game.blacks
         %{
@@ -96,6 +117,7 @@ defmodule CheckersGame.MoveDisk do
          blacks: blacks
         }
       else
+        IO.puts "black dead"
         whites = game.whites
         blacks = remove_disk(deadDisk, game.blacks)
         %{

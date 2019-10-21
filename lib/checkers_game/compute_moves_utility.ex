@@ -37,12 +37,48 @@ defmodule CheckersGame.ComputeMoves do
 
   # Highlights the tiles on which moves are possible
   def highlight_tiles(tiles, board) do
-    [tile | tail ] = tiles
-    board = List.replace_at(board, tile.position, tile)
-    if(length(tiles) == 1) do
-      board
+    if(length(tiles) > 0) do
+      [tile | tail ] = tiles
+      board = List.replace_at(board, tile.position, tile)
+      if(length(tiles) == 1) do
+        board
+      else
+        highlight_tiles(tail, board)
+      end
     else
-      highlight_tiles(tail, board)
+      board
+    end
+  end
+
+  # Computes the kill moves for the current disk
+  def get_jump_tiles(possibleMoves, jumpTiles, board, position) do
+    if length(possibleMoves) == 0 do
+      jumpTiles
+    else
+      tile = hd(possibleMoves)
+      if Enum.at(board, tile)[:disk] !== nil do
+        if(Enum.at(board, tile).disk.color !== Enum.at(board, position).disk.color) do
+          # Add the logic
+          delta = tile - position
+          if tile + delta >= 0 and tile + delta <= 63 do
+            if(Enum.at(board, tile+delta)[:disk] == nil) do
+              if rem(tile+1, 8) !== 0 and rem(tile, 8) !== 0 do
+                get_jump_tiles(tl(possibleMoves), [tile+delta | jumpTiles], board, position)
+              else
+                get_jump_tiles(tl(possibleMoves), jumpTiles, board, position)
+              end
+            else
+              get_jump_tiles(tl(possibleMoves), jumpTiles, board, position)
+            end
+          else
+            get_jump_tiles(tl(possibleMoves), jumpTiles, board, position)
+          end
+        else
+          get_jump_tiles(tl(possibleMoves), jumpTiles, board, position)
+        end
+      else
+        get_jump_tiles(tl(possibleMoves), jumpTiles, board, position)
+      end
     end
   end
 
@@ -51,14 +87,7 @@ defmodule CheckersGame.ComputeMoves do
     possibleMoves = get_possible_moves(Enum.at(board, position).disk, position)
 
     # Compute Kill moves
-    jumpTiles = Enum.filter(possibleMoves, fn tile ->
-      if Enum.at(board, tile)[:disk] do
-        if(Enum.at(board, tile).disk.color !== Enum.at(board, tile).disk.color) do
-          # Add the logic
-          "enemy ahead"
-        end
-      end
-    end)
+    jumpTiles = get_jump_tiles(possibleMoves, [], board, position)
 
     # If kill moves are available return them
     if length(jumpTiles) > 0 do
