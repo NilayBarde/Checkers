@@ -43,3 +43,4 @@ defmodule CheckersGameWeb.GameChannel do
     {:reply, {:ok, %{state: game}}, socket}
   end
 end
+

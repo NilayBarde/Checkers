@@ -58,7 +58,7 @@ defmodule CheckersGame.GameServer do
     {:reply, game}
   end
 
-  def handle_call({:chat_added, name, message}, _from, game) do 
+  def handle_call({:chat_added, name, message}, _from, game) do
     game = CheckersGame.Game.chat_added(game, message)
     CheckersGame.BackupAgent.put(name, game)
     {:reply, game, game}

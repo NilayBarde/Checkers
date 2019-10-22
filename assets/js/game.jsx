@@ -111,6 +111,9 @@ class Checkers extends React.Component {
                 this.setState({board: resp.state.board, doubleKill: resp.state.doubleKill})
                 console.log(resp)
             })
+
+        this.channel.push("get_games")
+            .receive("ok", resp => console.log(resp))
     }
 
     moveDisk(position) {

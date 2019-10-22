@@ -1,0 +1,39 @@
+.page-title {
+    text-align: center;
+}
+
+#activeGames, #pendingGames {
+    border: 5px solid green;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    text-align: center;
+    height: 500px;
+    background: rgb(9, 206, 9);
+    color: white;
+}
+
+.games {
+    overflow-y: scroll;
+    width: 100%;
+    overflow-x: hidden;
+}
+#pendingGames {
+    border-color: orange;
+    background: rgb(255, 203, 106);
+    color: black;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.game-row {
+    padding: 5px;
+    border-bottom: 1px solid black;
+    font-weight: bold;
+}
+
+.join-btn {
+    color: white;
+}

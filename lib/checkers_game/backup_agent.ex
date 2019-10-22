@@ -16,4 +16,10 @@ defmodule CheckersGame.BackupAgent do
 			Map.get(state, name)
 		end
 	end
+
+	def all do
+		Agent.get __MODULE__, fn state ->
+			state
+		end
+	end
 end

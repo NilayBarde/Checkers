@@ -15,15 +15,22 @@ import "phoenix_html"
 // Import local files
 
 import gameInit from './game'
+import indexInit from './index'
 
 import socket from "./socket"
 
 
 (() => {
     let game = document.getElementById("game-root")
+    let index = document.getElementById("index-root")
     if(game) {
         let gameName = window.gameName
-        let channel = socket.channel("game:" + gameName)
-        gameInit(game, gameName, channel)
+        let gameChannel = socket.channel("game:" + gameName)
+        gameInit(game, gameName, gameChannel)
+    }
+
+    if(index) {
+        let channel = socket.channel("index:index") 
+        indexInit(index, channel)
     }
 })()
