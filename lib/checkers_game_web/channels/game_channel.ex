@@ -2,9 +2,10 @@ defmodule CheckersGameWeb.GameChannel do
   use CheckersGameWeb, :channel
 
   alias CheckersGame.Game
+  alias CheckersGame.BackupAgent
 
   def join("game:" <> name, _payload, socket) do
-    game = Game.new()
+    game = BackupAgent.get(name) || Game.new()
     socket = socket
     |> assign(:game, game)
     |> assign(:name, name)
