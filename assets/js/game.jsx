@@ -123,26 +123,6 @@ class Checkers extends React.Component {
                 this.setState(resp.state)
                 console.log(this.state)
             })
-        // const { board, doubleKill } = this.state;
-        // // remove highlight from all the previous tiles
-        // board.forEach(tile => tile.isHighlighted = false)
-        
-        // if(doubleKill.length > 0) {
-        //     this.shiftDisk(doubleKill[0])
-        //     board[doubleKill[0]].disk.isSelected = true
-        //     if(doubleKill.indexOf(position) != -1) {
-        //         this.shiftDisk(doubleKill[doubleKill.indexOf(position)])
-        //     }
-        //     else {
-        //         this.shiftDisk(doubleKill[1])
-        //     }     
-        //     this.setState({doubleKill: []})
-        // }
-        // else {
-        //     this.shiftDisk(position)
-        // }
-        // this.hasGameEnded();
-        // this.setState({ board })
     }
 
     render() {
