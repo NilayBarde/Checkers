@@ -3,27 +3,37 @@ defmodule CheckersGameWeb.GameChannel do
 
   alias CheckersGame.Game
   alias CheckersGame.BackupAgent
+  alias CheckersGame.GameServer
 
   def join("game:" <> name, _payload, socket) do
+    # Start a process for the connection
+    GameServer.start(name)
+
+    # Get the game from the backup agent or a new game.
     game = BackupAgent.get(name) || Game.new()
+
+    # Store the game state in backup agent
     BackupAgent.put(name, game)
+
+    # Assign the current game name to the socket
     socket = socket
-    |> assign(:game, game)
     |> assign(:name, name)
+
+    # Respond to client with a new game state
     {:ok, %{"join" => name, "state" => game}, socket}
   end
 
   def handle_in("get_moves", %{"position" => position}, socket) do
-    game = Game.get_moves(socket.assigns[:game], position)
-    socket = assign(socket, :game, game)
-    BackupAgent.put(socket.assigns[:name], game)
+    # Get the name from the socket
+    name = socket.assigns[:name]
+    game = GameServer.get_moves(name, position)
     {:reply, {:ok, %{state: game}}, socket}
   end
 
   def handle_in("move_disk", %{"position" => position}, socket) do
-    game = Game.move_disk(socket.assigns[:game], position)
-    socket = assign(socket, :game, game)
-    BackupAgent.put(socket.assigns[:name], game)
-    {:reply, {:ok, %{state: game, socketGame: socket.assigns[:game]}}, socket}
+    # Get the name from the socket
+    name = socket.assigns[:name]
+    game = GameServer.move_disk(name, position)
+    {:reply, {:ok, %{state: game}}, socket}
   end
 end

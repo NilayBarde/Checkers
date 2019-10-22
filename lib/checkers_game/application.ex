@@ -10,7 +10,8 @@ defmodule CheckersGame.Application do
     children = [
       # Start the endpoint when the application starts
       CheckersGameWeb.Endpoint,
-      CheckersGame.BackupAgent
+      CheckersGame.GameSup,
+      CheckersGame.BackupAgent,
       # Starts a worker by calling: CheckersGame.Worker.start_link(arg)
       # {CheckersGame.Worker, arg},
     ]
