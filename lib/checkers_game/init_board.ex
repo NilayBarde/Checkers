@@ -29,7 +29,8 @@ defmodule CheckersGame.InitBoard do
         whites: Enum.reverse(whites),
         board: board,
         doubleKill: [],
-        message: []
+        message: [],
+        winner: nil
       }
     else
       if col == 8 do

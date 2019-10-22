@@ -72,15 +72,12 @@ class Checkers extends React.Component {
     }
 
     hasGameEnded() {
-        const { blacks, whites, board } = this.state;
-
-        // check if there are no white/black disks remaining on the board
-        const noBlackDisks = blacks.length == 0;
-        const noWhiteDisks = whites.length == 0;
-        if (noBlackDisks) {
-            alert('Player 2 won!');
-        } else if (noWhiteDisks) {
+        const { winner } = this.state;
+        
+        if (winner && winner == 'Player 1') {
             alert('Player 1 won!');
+        } else if (winner && winner == 'Player 2') {
+            alert('Player 2 won!');
         }
 
         // check if there are no possible moves
@@ -124,6 +121,7 @@ class Checkers extends React.Component {
                 this.setState(resp.state)
                 console.log(this.state)
             })
+        this.hasGameEnded();
     }
 
     messageAdded() {
