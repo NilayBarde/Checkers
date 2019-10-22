@@ -22,6 +22,7 @@ defmodule CheckersGame.MoveDisk do
       else
         game
       end
+    end
   end
 
   def move_disk(game, position) do
