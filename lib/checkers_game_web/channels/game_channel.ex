@@ -36,4 +36,11 @@ defmodule CheckersGameWeb.GameChannel do
     game = GameServer.move_disk(name, position)
     {:reply, {:ok, %{state: game}}, socket}
   end
+
+  def handle_in("chat_added", %{"message" => message}, socket) do
+    game = Game.chat_added(socket.assigns[:game], message)
+    socket = assign(socket, :game, game)
+    BackupAgent.put(socket.assigns[:name], game)
+    {:reply, {:ok, %{state: game, socketGame: socket.assigns[:game]}}, socket}
+  end
 end

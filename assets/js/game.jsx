@@ -11,6 +11,7 @@ class Checkers extends React.Component {
         super(props)
         this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
+        this.messageAdded = this.messageAdded.bind(this)
         
 
         this.channel = props.channel
@@ -125,12 +126,43 @@ class Checkers extends React.Component {
             })
     }
 
+    messageAdded() {
+        let inputField = document.getElementById('chat-message');
+        const message = inputField.value;
+        inputField.value = '';
+        this.channel.push("chat_added", {message})
+            .receive("ok", resp => {
+                this.setState(resp.state)
+                console.log(this.state)
+            })
+    }
+
+    renderChatMessages() {
+        const { message } = this.state;
+        const messages = message;
+        let formattedMessages = <p> No Messages </p>;
+        if (messages.length > 0) {
+            formattedMessages = messages.map((msg, index) => {
+                const username = `User ${index+1}`
+                return (
+                    <div className="message" key={index}>
+                        <div className="message-text">
+                            <div className="message-user"> {username} </div>
+                            <div>{msg}</div>
+                        </div>
+                    </div>
+                )
+            })
+        }
+        return formattedMessages;
+    }
+
     render() {
         return (
             <div>
                 <div className="row main-row">
                     {/* GAME BOARD */}
-                    <div className="column">
+                    <div className="column-1">
                         <div className="board">{this.createBoard()}</div>
 
                         <div className="row action-row">
@@ -144,13 +176,13 @@ class Checkers extends React.Component {
                     </div>
 
                     {/* CHAT ROOM */}
-                    <div className="column chat-room">
+                    <div className="column-2 chat-room">
                         <div className="messages">
-                            {this.state.message}
+                            {this.renderChatMessages()}
                         </div>
                         <div className="chat-row">
-                            <input type="text" className="chat-input" />
-                            <button className="chat-btn">Send</button>
+                            <input id="chat-message" type="text" className="chat-input" />
+                            <button className="chat-btn" onClick={this.messageAdded}>Send</button>
                         </div>
                     </div>
                 </div>
