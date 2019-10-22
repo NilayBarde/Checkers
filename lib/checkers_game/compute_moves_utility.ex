@@ -176,7 +176,7 @@ defmodule CheckersGame.ComputeMoves do
   def get_possible_moves(disk, position) do
     # Get the possible moves for the current king disk
 
-    if disk["isKing"] do
+    if disk[:isKing] == true do
       # For black king disk
       if disk.color == "black" do
         [position - 7, position - 9, position + 9, position + 7]

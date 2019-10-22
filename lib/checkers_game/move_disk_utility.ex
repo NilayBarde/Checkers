@@ -75,10 +75,7 @@ defmodule CheckersGame.MoveDisk do
     tile = Map.put(tile, :disk, nil)
 
     # To check if the disk becomes king after move
-    if selectedDisk.isKing === false do
-      Map.put(selectedDisk, :isKing, is_king(selectedDisk))
-    end
-
+    selectedDisk = is_king(selectedDisk)
     new_tile = Map.put(Enum.at(board, position), :disk, selectedDisk)
 
     # Move the disk from current position to new Position
@@ -99,15 +96,18 @@ defmodule CheckersGame.MoveDisk do
   end
 
   def is_king(disk) do
-    if disk.color == "black" and disk.position <= 7 do
-      true
+    if disk.color == "black" do
+      if disk.position <= 7 do
+        Map.put(disk, :isKing, true)
+      else
+        disk
+      end
     else
-      false
-    end
-    if disk.color == "white" and disk.position >=56 do
-      true
-    else
-      false
+      if disk.position >=56 do
+        Map.put(disk, :isKing, true)
+      else
+        disk
+      end
     end
   end
 
