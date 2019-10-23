@@ -1,5 +1,4 @@
 @import './app.css';
-
 :root {
     --height: 80px;
     --width: 80px;
@@ -13,7 +12,9 @@ body {
 .main-row {
     height: 98vh;
 }
-.tile-red, .tile-white {
+
+.tile-red,
+.tile-white {
     background: rgb(139, 1, 1);
     height: var(--height);
     width: var(--width);
@@ -44,7 +45,7 @@ body {
 }
 
 .action-row {
-    position :absolute;
+    position: absolute;
     bottom: 0;
     width: 50%;
     margin-bottom: 2px;
@@ -55,8 +56,29 @@ body {
     height: var(--height);
     width: 640px;
 }
+
 .board-col {
     display: inline-block;
+}
+
+.white-score {
+    padding-top: 25%;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
+.white-score h1,
+.black-score h1 {
+    font-size: 100px;
+    text-align: center;
+}
+
+.black-score {
+    padding-top: 80%;
+    display: flex;
+    flex: 1;
+    justify-content: center;
 }
 
 .chat-room {
@@ -64,7 +86,8 @@ body {
     border-left: 5px solid rgb(175, 51, 175);
 }
 
-.chat-input, .chat-btn {
+.chat-input,
+.chat-btn {
     display: inline !important;
 }
 
@@ -112,7 +135,9 @@ input[type="text"] {
     color: purple;
     display: inline;
 }
-.black-disk, .white-disk {
+
+.black-disk,
+.white-disk {
     background: black;
     height: 50px;
     width: 50px;

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import '../css/game'
 
 export default function gameInit(root, gameName, channel) {
-    ReactDOM.render(<Checkers gameName={gameName} channel={channel}/>, root)
+    ReactDOM.render(<Checkers gameName={gameName} channel={channel} />, root)
 }
 
 class Checkers extends React.Component {
@@ -12,7 +12,7 @@ class Checkers extends React.Component {
         this.getMoves = this.getMoves.bind(this)
         this.moveDisk = this.moveDisk.bind(this)
         this.messageAdded = this.messageAdded.bind(this)
-        
+
 
         this.channel = props.channel
         this.channel.join()
@@ -32,7 +32,7 @@ class Checkers extends React.Component {
             message: [],
             whites: [],
             blacks: [],
-            doubleKill: []
+            doubleKill: [],
         }
     }
 
@@ -73,7 +73,7 @@ class Checkers extends React.Component {
 
     hasGameEnded() {
         const { winner } = this.state;
-        
+
         if (winner && winner == 'Player 1') {
             alert('Player 1 won!');
         } else if (winner && winner == 'Player 2') {
@@ -106,9 +106,9 @@ class Checkers extends React.Component {
     }
 
     getMoves(position) {
-        this.channel.push("get_moves", {position})
+        this.channel.push("get_moves", { position })
             .receive("ok", resp => {
-                this.setState({board: resp.state.board, doubleKill: resp.state.doubleKill})
+                this.setState({ board: resp.state.board, doubleKill: resp.state.doubleKill })
                 console.log(resp)
             })
 
@@ -117,8 +117,8 @@ class Checkers extends React.Component {
     }
 
     moveDisk(position) {
-        
-        this.channel.push("move_disk", {position})
+
+        this.channel.push("move_disk", { position })
             .receive("ok", resp => {
                 console.log(resp)
                 this.setState(resp.state)
@@ -131,7 +131,7 @@ class Checkers extends React.Component {
         let inputField = document.getElementById('chat-message');
         const message = inputField.value;
         inputField.value = '';
-        this.channel.push("chat_added", {message})
+        this.channel.push("chat_added", { message })
             .receive("ok", resp => {
                 this.setState(resp.state)
                 console.log(this.state)
@@ -144,7 +144,7 @@ class Checkers extends React.Component {
         let formattedMessages = <p> No Messages </p>;
         if (messages.length > 0) {
             formattedMessages = messages.map((msg, index) => {
-                const username = `User ${index+1}`
+                const username = `User ${index + 1}`
                 return (
                     <div className="message" key={index}>
                         <div className="message-text">
@@ -157,7 +157,7 @@ class Checkers extends React.Component {
         }
         return formattedMessages;
     }
-
+    
     render() {
         return (
             <div>
@@ -173,6 +173,15 @@ class Checkers extends React.Component {
                             <div className="column">
                                 <button>Raise a draw</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="column-3">
+                        <div className="white-score">
+                            <h1>{12 - this.state.blacks.length}</h1>
+                        </div>
+                        <div className="black-score">
+                            <h1>{12 - this.state.whites.length}</h1>
                         </div>
                     </div>
 
