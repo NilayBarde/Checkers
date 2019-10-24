@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '../css/game'
-
+import Tile from './tile'
 export default function gameInit(root, gameName, channel) {
     ReactDOM.render(<Checkers gameName={gameName} channel={channel} />, root)
 }
@@ -39,8 +39,8 @@ class Checkers extends React.Component {
             })
             .receive("error", error => console.log("cant connect", error))
         
-        let player = prompt("Please Enter your name")
-        this.channel.push("join_game", {player})
+        this.player = prompt("Please Enter your name")
+        this.channel.push("join_game", {player: this.player})
             .receive("ok", resp => console.log(resp))
         this.channel.push("get_games")
         this.channel.on("update", resp => this.updateState(resp.state))
@@ -51,9 +51,6 @@ class Checkers extends React.Component {
 
     updateState(state) {
         this.setState(state)
-    }
-
-    joinGame(player) {
     }
 
     // To create the board and populate it with tiles.
@@ -95,42 +92,24 @@ class Checkers extends React.Component {
         } else if (winner && winner == 'Player 2') {
             alert('Player 2 won!');
         }
-
-        // check if there are no possible moves
-        // const noPossibleMovesBlack = false;
-        // const noPossibleMovesWhite = false;
-        // board.forEach((tile) => {
-        //     if (tile.disk && tile.disk.color == 'black') {
-        //         const moves = this.getPossibleMoves(tile.disk, tile.position);
-        //         if (moves && moves.length > 0) {
-        //             noPossibleMovesBlack = true;
-        //         }
-        //     } else if (tile.disk && tile.disk.color == 'white') {
-        //         const moves = this.getPossibleMoves(tile.disk, tile.position);
-        //         if (moves && moves.length > 0) {
-        //             noPossibleMovesWhite = true;
-        //         }
-        //     }
-        // });
-        // if (noPossibleMovesBlack || noPossibleMovesWhite) {
-        //     if (noPossibleMovesBlack) {
-        //         alert('No possible moves for Player 1, Player 2 wins!');
-        //     } else if (noPossibleMovesWhite) {
-        //         alert('No possible moves for Player 2, Player 1 wins!');
-        //     }
-        // }
     }
 
     getMoves(position) {
-        this.channel.push("get_moves", { position })
+        let player = this.state.players.filter(player => {
+            if(player.name === this.player)
+                return player
+        })
+
+        if(this.state.board[position].disk.color === player[0].disks) {
+            this.channel.push("get_moves", { position })
             .receive("ok", resp => {
                 this.setState({ board: resp.state.board, doubleKill: resp.state.doubleKill })
                 console.log(resp)
             })
+        }
     }
 
     moveDisk(position) {
-
         this.channel.push("move_disk", { position })
             .receive("ok", resp => {
                 console.log(resp)
@@ -207,10 +186,12 @@ class Checkers extends React.Component {
     
                         <div className="column-3">
                             <div className="white-score">
+                                <div id="playerName1">{this.state.players[0].name}</div>
                                 <h1>{12 - this.state.blacks.length}</h1>
                             </div>
                             <div className="black-score">
                                 <h1>{12 - this.state.whites.length}</h1>
+                                <div id="playerName2">{this.state.players[1].name}</div>
                             </div>
                         </div>
     
@@ -226,72 +207,6 @@ class Checkers extends React.Component {
                         </div>
                     </div>
                 </div>
-            )
-        }
-    }
-}
-
-// Component for tile.
-function Tile(props) {
-    if (props.color == "red") {
-        if (props.disk) {
-            return (
-                <div className="tile-red">
-                    <Disk
-                        getMoves={props.getMoves}
-                        color={props.disk.color}
-                        disk={props.disk}
-                        position={props.position}
-                    />
-                </div>
-            )
-        } else {
-            const { isHighlighted } = props;
-            const tile = isHighlighted ?
-                <div className="tile-highlighted" onClick={() => { props.moveDisk(props.position) }} /> : <div className="tile-red" />;
-            return tile;
-        }
-    }
-    else {
-        if (props.disk) {
-            return (
-                <div className="tile-white">
-                    <Disk
-                        getMoves={props.getMoves}
-                        color={props.disk.color}
-                        disk={props.disk}
-                        position={props.position}
-                    />
-                </div>
-            )
-        } else {
-            return <div className="tile-white"></div>;
-        }
-    }
-}
-
-// Component for disk.
-function Disk(props) {
-    if (props.color == "black") {
-        if (props.disk.isKing) {
-            return (
-                <div className="black-disk-king" onClick={() => { props.getMoves(props.position) }}></div>
-            )
-        } else {
-            return (
-                <div className="black-disk" onClick={() => { props.getMoves(props.position) }}></div>
-            )
-        }
-
-    }
-    else {
-        if (props.disk.isKing) {
-            return (
-                <div className="white-disk-king" onClick={() => props.getMoves(props.position)}></div>
-            )
-        } else {
-            return (
-                <div className="white-disk" onClick={() => props.getMoves(props.position)}></div>
             )
         }
     }

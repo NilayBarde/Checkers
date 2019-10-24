@@ -178,3 +178,16 @@ input[type="text"] {
     cursor: pointer;
     transform: translate(-50%, -50%);
 }
+
+#playerName1 {
+    text-align: center;
+    font-size: 28px;
+    position: absolute;
+    top: 8%;
+}
+
+#playerName2 {
+    font-size: 28px;
+    position: absolute;
+    top: 75%;
+}

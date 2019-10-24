@@ -19,7 +19,7 @@ defmodule CheckersGameWeb.GameChannel do
     |> assign(:name, name)
 
     # Respond to client with a new game state
-    {:ok, %{"join" => name, "state" => game, "user" => socket.assigns[:user]}, socket}
+    {:ok, %{"join" => name, "state" => game}, socket}
   end
 
   def handle_in("join_game", %{"player" => player}, socket) do
@@ -30,7 +30,7 @@ defmodule CheckersGameWeb.GameChannel do
       # Add the first player
       if length(game[:players]) == 0 do
         # Modify the state through genserver
-        GameServer.add_player(name, true, player)
+        GameServer.add_player(name, true, player, "black")
         game = GameServer.peek(name)
         socket = socket
         |> assign(:user, player)
@@ -39,7 +39,7 @@ defmodule CheckersGameWeb.GameChannel do
       # Add second player
       else
         # Modify the state through genserver
-        GameServer.add_player(name, false, player)
+        GameServer.add_player(name, false, player, "white")
         game = GameServer.peek(name)
         socket = socket
         |> assign(:user, player)

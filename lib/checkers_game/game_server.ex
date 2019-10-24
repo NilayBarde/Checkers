@@ -41,8 +41,8 @@ defmodule CheckersGame.GameServer do
     GenServer.call(reg(name), {:chat_added, name, message})
   end
 
-  def add_player(name, hasTurn, player) do
-    GenServer.cast(reg(name), {:add_player, name, player, hasTurn})
+  def add_player(name, hasTurn, player, disks) do
+    GenServer.cast(reg(name), {:add_player, name, player, hasTurn, disks})
   end
 
   def peek (name) do
@@ -62,8 +62,8 @@ defmodule CheckersGame.GameServer do
     {:noreply, game}
   end
 
-  def handle_cast({:add_player, name, player, hasTurn}, game) do
-    newPlayer = %{name: player, hasTurn: hasTurn}
+  def handle_cast({:add_player, name, player, hasTurn, disks}, game) do
+    newPlayer = %{name: player, hasTurn: hasTurn, disks: disks}
     game = Map.put(game, :players, [newPlayer | game[:players]])
     CheckersGame.BackupAgent.put(name, game)
     {:noreply, game}
