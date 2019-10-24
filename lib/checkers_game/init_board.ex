@@ -1,7 +1,7 @@
 # To create the initial state of the board
 defmodule CheckersGame.InitBoard do
 
-  def init do
+  def init() do
     board = createBoard(0, [])
     board = Enum.reverse(board)
     createDisks(0, 0, [], [], board)
@@ -30,7 +30,8 @@ defmodule CheckersGame.InitBoard do
         board: board,
         doubleKill: [],
         message: [],
-        winner: nil
+        winner: nil,
+        players: []
       }
     else
       if col == 8 do

@@ -12,25 +12,27 @@ class Index extends React.Component {
     constructor(props) {
         super(props)
         this.channel = props.channel
-        this.channel.join()
-            .receive("error", error => console.log("cant connect", error))
+        this.channel.join().receive("ok", resp => console.log(resp))
 
-        this.channel.push("get_games").receive("ok", resp => this.updateState(resp.games))
-
+        // this.channel.push("get_games").receive("ok", resp => this.updateState(resp.games))
+        
+        this.channel.on("update", (resp) => console.log(resp))
         this.state = {
             games: []
         }
     }
 
     updateState(gamesObj) {
-        let games = Object.keys(gamesObj)
+        let games = Object.keys(gamesObj).filter(game => {
+            if(game !== "index")
+                return game
+        })
         games = games.map(game => {
             return {
                 name: game
             }
         })
         this.setState({games})
-        console.log(this.state)
     }
 
     activeGames() {
@@ -46,10 +48,22 @@ class Index extends React.Component {
             )
         })
     }
+
+    createGame() {
+        let gameName = document.getElementById("gameName").value
+        let playerName = document.getElementById("playerName").value
+        if(gameName !== "" && playerName !== "") {
+            console.log(gameName, playerName)
+        }
+    }
     render() {
         return (
             <div className="container">
                 <h2 className="page-title">Checkers Game</h2>
+                <div className="row">
+                    <input type="text" id="gameName" placeholder="Game name"/>
+                    <button id="newGameBtn" onClick={() => {this.createGame()}}>Join / Create</button>
+                </div>
                 <div className="row">
                     <div className="column" id="pendingGames">
                         <h4>Pending Games</h4>

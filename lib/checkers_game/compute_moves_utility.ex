@@ -36,7 +36,6 @@ defmodule CheckersGame.ComputeMoves do
     |> highlight_tiles(board)
 
     doubleKill = result.doubleKill
-
     Map.merge(game, %{board: board, doubleKill: doubleKill})
   end
 
@@ -152,7 +151,8 @@ defmodule CheckersGame.ComputeMoves do
           delta = 2*(tempTile - tile)
           if tile + delta >= 0 and tile + delta <= 63 do
             if(Enum.at(board, tile+delta)[:disk] == nil) do
-              if rem(tile+1, 8) !== 0 and rem(tile, 8) !== 0 do
+              IO.puts tile
+              if rem(tile+delta+1, 8) !== 0 and rem(tile+delta, 8) !== 0 do
                 get_doubleKills(tl(possibleMoves), position, tile, [tile+delta | doubleKills], board)
               else
                 get_doubleKills(tl(possibleMoves), position, tile, doubleKills, board)

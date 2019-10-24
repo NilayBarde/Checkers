@@ -11,13 +11,10 @@
     height: 500px;
     background: rgb(9, 206, 9);
     color: white;
+    overflow-y: scroll;
 }
 
-.games {
-    overflow-y: scroll;
-    width: 100%;
-    overflow-x: hidden;
-}
+
 #pendingGames {
     border-color: orange;
     background: rgb(255, 203, 106);
@@ -36,4 +33,8 @@
 
 .join-btn {
     color: white;
+}
+
+#gameName, #playerName, #newGameBtn {
+    margin: 10px;
 }

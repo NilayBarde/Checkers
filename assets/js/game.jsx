@@ -13,12 +13,6 @@ class Checkers extends React.Component {
         this.moveDisk = this.moveDisk.bind(this)
         this.messageAdded = this.messageAdded.bind(this)
 
-
-        this.channel = props.channel
-        this.channel.join()
-            .receive("ok", resp => this.updateState(resp.state))
-            .receive("error", error => console.log("cant connect", error))
-
         // creating the initial board array
         let board = Array(64).fill(null).map((el, index) => {
             return {
@@ -33,11 +27,33 @@ class Checkers extends React.Component {
             whites: [],
             blacks: [],
             doubleKill: [],
+            players: [],
+            user: null
         }
+
+        this.channel = props.channel
+        this.channel.join()
+            .receive("ok", resp => {
+                console.log(resp.state)
+                this.updateState(resp.state)
+            })
+            .receive("error", error => console.log("cant connect", error))
+        
+        let player = prompt("Please Enter your name")
+        this.channel.push("join_game", {player})
+            .receive("ok", resp => console.log(resp))
+        this.channel.push("get_games")
+        this.channel.on("update", resp => this.updateState(resp.state))
+        this.channel.on("player_joined", resp => {
+            this.updateState(resp.state)
+        })
     }
 
     updateState(state) {
         this.setState(state)
+    }
+
+    joinGame(player) {
     }
 
     // To create the board and populate it with tiles.
@@ -111,9 +127,6 @@ class Checkers extends React.Component {
                 this.setState({ board: resp.state.board, doubleKill: resp.state.doubleKill })
                 console.log(resp)
             })
-
-        this.channel.push("get_games")
-            .receive("ok", resp => console.log(resp))
     }
 
     moveDisk(position) {
@@ -159,45 +172,54 @@ class Checkers extends React.Component {
     }
     
     render() {
-        return (
-            <div>
-                <div className="row main-row">
-                    {/* GAME BOARD */}
-                    <div className="column-1">
-                        <div className="board">{this.createBoard()}</div>
-
-                        <div className="row action-row">
-                            <div className="column">
-                                <button onClick={() => { this.demo() }}>Quit Game</button>
+        if(this.state.players.length < 2) {
+            return (
+                <div>
+                    <h2>Waiting for a player to join...</h2>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>
+                    <div className="row main-row">
+                        {/* GAME BOARD */}
+                        <div className="column-1">
+                            <div className="board">{this.createBoard()}</div>
+    
+                            <div className="row action-row">
+                                <div className="column">
+                                    <button onClick={() => { this.demo() }}>Quit Game</button>
+                                </div>
+                                <div className="column">
+                                    <button>Raise a draw</button>
+                                </div>
                             </div>
-                            <div className="column">
-                                <button>Raise a draw</button>
+                        </div>
+    
+                        <div className="column-3">
+                            <div className="white-score">
+                                <h1>{12 - this.state.blacks.length}</h1>
+                            </div>
+                            <div className="black-score">
+                                <h1>{12 - this.state.whites.length}</h1>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="column-3">
-                        <div className="white-score">
-                            <h1>{12 - this.state.blacks.length}</h1>
-                        </div>
-                        <div className="black-score">
-                            <h1>{12 - this.state.whites.length}</h1>
-                        </div>
-                    </div>
-
-                    {/* CHAT ROOM */}
-                    <div className="column-2 chat-room">
-                        <div className="messages">
-                            {this.renderChatMessages()}
-                        </div>
-                        <div className="chat-row">
-                            <input id="chat-message" type="text" className="chat-input" />
-                            <button className="chat-btn" onClick={this.messageAdded}>Send</button>
+    
+                        {/* CHAT ROOM */}
+                        <div className="column-2 chat-room">
+                            <div className="messages">
+                                {this.renderChatMessages()}
+                            </div>
+                            <div className="chat-row">
+                                <input id="chat-message" type="text" className="chat-input" />
+                                <button className="chat-btn" onClick={this.messageAdded}>Send</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
     }
 }
 

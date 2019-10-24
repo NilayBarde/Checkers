@@ -41,6 +41,37 @@ defmodule CheckersGame.GameServer do
     GenServer.call(reg(name), {:chat_added, name, message})
   end
 
+  def add_player(name, hasTurn, player) do
+    GenServer.cast(reg(name), {:add_player, name, player, hasTurn})
+  end
+
+  def peek (name) do
+    GenServer.call(reg(name), {:peek})
+  end
+
+  def switch_turns(name) do
+    GenServer.cast(reg(name), {:switch_turns})
+  end
+
+  def handle_cast({:switch_turns}, game) do
+    updatedPlayers = game[:players]
+    |> Enum.map(fn player ->
+      Map.put(player, :hasTurn, !player[:hasTurn])
+    end)
+    game = Map.put(game, :players, updatedPlayers)
+    {:noreply, game}
+  end
+
+  def handle_cast({:add_player, name, player, hasTurn}, game) do
+    newPlayer = %{name: player, hasTurn: hasTurn}
+    game = Map.put(game, :players, [newPlayer | game[:players]])
+    CheckersGame.BackupAgent.put(name, game)
+    {:noreply, game}
+  end
+
+  def handle_call({:peek}, _from, game) do
+    {:reply, game, game}
+  end
 
   def handle_call({:get_moves, name, position}, _from, game) do
     game = CheckersGame.Game.get_moves(game, position)

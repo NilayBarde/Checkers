@@ -32,7 +32,7 @@ defmodule CheckersGame.MoveDisk do
       # First capture first tile
       result = shift_disk(game, Enum.at(game.doubleKill, 0))
       board = result.board
-      tile = IO.inspect set_is_selected(board, Enum.at(game.doubleKill, 0), true)
+      tile = set_is_selected(board, Enum.at(game.doubleKill, 0), true)
       board = List.replace_at(board, tile.position, tile)
       game = Map.merge(game, %{board: board, whites: result.whites, blacks: result.blacks, winner: result[:winner]})
       # Capture second tile
@@ -40,7 +40,8 @@ defmodule CheckersGame.MoveDisk do
       Map.merge(game, %{board: result.board, whites: result.whites, blacks: result.blacks, winner: result[:winner]})
 
     else
-      shift_disk(game, position)
+      result = shift_disk(game, position)
+      Map.merge(game, %{board: result.board, whites: result.whites, blacks: result.blacks, winner: result[:winner]})
     end
   end
 
@@ -83,11 +84,6 @@ defmodule CheckersGame.MoveDisk do
     board = List.replace_at(board, tile.position, tile)
     |> List.replace_at(position, new_tile)
     |> remove_highlights()
-    %{
-      board: board,
-      whites: whites,
-      blacks: blacks
-    }
 
     hasGameEnded(%{
       board: board,

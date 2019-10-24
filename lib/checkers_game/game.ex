@@ -6,7 +6,7 @@ defmodule CheckersGame.Game do
   alias CheckersGame.Chat
 
   # Returns a new board
-  def new do
+  def new() do
     InitBoard.init()
   end
 
