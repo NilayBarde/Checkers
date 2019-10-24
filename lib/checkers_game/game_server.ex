@@ -37,8 +37,8 @@ defmodule CheckersGame.GameServer do
     GenServer.call(reg(name), {:get_state, name})
   end
 
-  def chat_added(name, message) do
-    GenServer.call(reg(name), {:chat_added, name, message})
+  def chat_added(name, message, user) do
+    GenServer.call(reg(name), {:chat_added, name, message, user})
   end
 
   def add_player(name, hasTurn, player, disks) do
@@ -89,8 +89,8 @@ defmodule CheckersGame.GameServer do
     {:reply, game}
   end
 
-  def handle_call({:chat_added, name, message}, _from, game) do
-    game = CheckersGame.Game.chat_added(game, message)
+  def handle_call({:chat_added, name, message, user}, _from, game) do
+    game = CheckersGame.Game.chat_added(game, message, user)
     CheckersGame.BackupAgent.put(name, game)
     {:reply, game, game}
   end

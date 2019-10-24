@@ -124,7 +124,7 @@ class Checkers extends React.Component {
         const message = inputField.value;
         inputField.value = '';
         if (message.replace(/ /g, "").length > 0) {
-            this.channel.push("chat_added", { message })
+            this.channel.push("chat_added", { message:message, user:this.player })
                 .receive("ok", resp => {
                     this.setState(resp.state)
                     console.log(this.state)
@@ -138,12 +138,11 @@ class Checkers extends React.Component {
         let formattedMessages = <p> No Messages </p>;
         if (messages.length > 0) {
             formattedMessages = messages.map((msg, index) => {
-                const username = `User ${index + 1}`
                 return (
                     <div className="message" key={index}>
                         <div className="message-text">
-                            <div className="message-user"> {username} </div>
-                            <div>{msg}</div>
+                            <div className="message-user"> {msg.user} </div>
+                            <div>{msg.message}</div>
                         </div>
                     </div>
                 )

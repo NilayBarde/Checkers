@@ -19,8 +19,8 @@ defmodule CheckersGame.Game do
     MoveDisk.move_disk(game, position)
   end
 
-  def chat_added(game, message) do
-    Chat.chat_added(game, message)
+  def chat_added(game, message, user) do
+    Chat.chat_added(game, message, user)
   end
 
 end

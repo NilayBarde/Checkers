@@ -110,9 +110,9 @@ defmodule CheckersGameWeb.GameChannel do
 
   end
 
-  def handle_in("chat_added", %{"message" => message}, socket) do
+  def handle_in("chat_added", %{"message" => message, "user" => user}, socket) do
     name = socket.assigns[:name]
-    game = GameServer.chat_added(name, message)
+    game = GameServer.chat_added(name, message, user)
     broadcast!(socket, "update", %{state: game})
     {:reply, {:ok, %{state: game}}, socket}
   end
