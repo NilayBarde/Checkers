@@ -144,11 +144,13 @@ class Checkers extends React.Component {
         let inputField = document.getElementById('chat-message');
         const message = inputField.value;
         inputField.value = '';
-        this.channel.push("chat_added", { message })
-            .receive("ok", resp => {
-                this.setState(resp.state)
-                console.log(this.state)
-            })
+        if (message.replace(/ /g, "").length > 0) {
+            this.channel.push("chat_added", { message })
+                .receive("ok", resp => {
+                    this.setState(resp.state)
+                    console.log(this.state)
+                })
+        }
     }
 
     renderChatMessages() {
@@ -170,7 +172,13 @@ class Checkers extends React.Component {
         }
         return formattedMessages;
     }
-    
+
+    handleKeyPress(event) {
+        if (event.key == 'Enter') {
+            this.messageAdded();
+        }
+    };
+
     render() {
         if(this.state.players.length < 2) {
             return (
@@ -212,7 +220,7 @@ class Checkers extends React.Component {
                                 {this.renderChatMessages()}
                             </div>
                             <div className="chat-row">
-                                <input id="chat-message" type="text" className="chat-input" />
+                                <input id="chat-message" onKeyPress={(e) => this.handleKeyPress(e)} type="text" className="chat-input" />
                                 <button className="chat-btn" onClick={this.messageAdded}>Send</button>
                             </div>
                         </div>
