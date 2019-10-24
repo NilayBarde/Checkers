@@ -30,7 +30,7 @@ import socket from "./socket"
     }
 
     if(index) {
-        let channel = socket.channel("game:index") 
+        let channel = socket.channel("index:index") 
         indexInit(index, channel)
     }
 })()

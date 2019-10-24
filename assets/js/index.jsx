@@ -12,37 +12,65 @@ class Index extends React.Component {
     constructor(props) {
         super(props)
         this.channel = props.channel
-        this.channel.join().receive("ok", resp => console.log(resp))
+        this.channel.join().receive("ok", resp => this.updateState(resp.games))
 
-        // this.channel.push("get_games").receive("ok", resp => this.updateState(resp.games))
-        
-        this.channel.on("update", (resp) => console.log(resp))
+        this.channel.on("new_game", (resp) => {
+            this.updateState(resp.games)
+        })
         this.state = {
-            games: []
+            activeGames: [],
+            pendingGames: []
         }
     }
 
     updateState(gamesObj) {
-        let games = Object.keys(gamesObj).filter(game => {
-            if(game !== "index")
-                return game
-        })
+        let games = Object.keys(gamesObj)
         games = games.map(game => {
             return {
-                name: game
+                name: game,
+                players: gamesObj[game].players.map(player => player.name)
             }
         })
-        this.setState({games})
+        let activeGames = games.filter(game => {
+            if(game.players.length == 2) {
+                return game
+            }
+        })
+
+        let pendingGames = games.filter(game => {
+            if(game.players.length == 1) {
+                return game
+            }
+        })
+        this.setState({activeGames, pendingGames})
+    }
+
+    renderPlayers(players) {
+        return players.map((player, index) => {
+            return(
+                <div className="column" key={index}>{player}</div>
+            )
+        })
     }
 
     activeGames() {
-        
-        return this.state.games.map((game, index) => {
+        return this.state.activeGames.map((game, index) => {
             return (
                 <div className="row game-row" key={index}>
                     <div className="column">{game.name}</div>
-                    <div className="column">Player 1</div>
-                    <div className="column">Player 2</div>
+                    {this.renderPlayers(game.players)}
+                    <a className="column join-btn" href={"/game/" + game.name}>Join</a>
+                </div>
+            )
+        })
+    }
+
+    pendingGames() {
+        return this.state.pendingGames.map((game, index) => {
+            return (
+                <div className="row game-row" key={index}>
+                    <div className="column">{game.name}</div>
+                    {this.renderPlayers(game.players)}
                     <a className="column join-btn" href={"/game/" + game.name}>Join</a>
                 </div>
             )
@@ -51,9 +79,8 @@ class Index extends React.Component {
 
     createGame() {
         let gameName = document.getElementById("gameName").value
-        let playerName = document.getElementById("playerName").value
-        if(gameName !== "" && playerName !== "") {
-            console.log(gameName, playerName)
+        if(gameName !== "") {
+            window.location.replace("/game/"+gameName)
         }
     }
     render() {
@@ -68,6 +95,14 @@ class Index extends React.Component {
                     <div className="column" id="pendingGames">
                         <h4>Pending Games</h4>
                         <h5>You can join one of these and start to play</h5>
+                        <div className="row game-row">
+                            <div className="column">Game Name</div>
+                            <div className="column">Player 1</div>
+                            <div className="column">Actions</div>
+                        </div>    
+                        <div className="games">
+                            {this.pendingGames()}
+                        </div>
                     </div>
 
                     <div className="column" id="activeGames">

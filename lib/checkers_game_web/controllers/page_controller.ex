@@ -8,4 +8,5 @@ defmodule CheckersGameWeb.PageController do
   def game(conn, %{"name" => name}) do
     render(conn, "game.html", name: name)
   end
+
 end

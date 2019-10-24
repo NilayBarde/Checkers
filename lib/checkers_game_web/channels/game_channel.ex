@@ -35,6 +35,7 @@ defmodule CheckersGameWeb.GameChannel do
         socket = socket
         |> assign(:user, player)
         |> assign(:game, game)
+        CheckersGameWeb.Endpoint.broadcast_from!(self(), "index:index", "new_game", %{games: BackupAgent.all()})
         {:reply, {:ok, %{state: game}}, socket}
       # Add second player
       else
@@ -45,13 +46,13 @@ defmodule CheckersGameWeb.GameChannel do
         |> assign(:user, player)
         |> assign(:game, game)
         broadcast!(socket, "player_joined", %{state: game})
+        CheckersGameWeb.Endpoint.broadcast_from!(self(), "index:index", "new_game", %{games: BackupAgent.all()})
         {:reply, {:ok, %{state: game}}, socket}
       end
     else
       socket = socket
       |> assign(:user, player)
       |> assign(:game, game)
-
       {:reply, {:ok, %{state: game}}, socket}
     end
   end
