@@ -44,9 +44,17 @@ class Checkers extends React.Component {
         this.channel.on("player_joined", resp => {
             this.updateState(resp.state)
         })
+
+        this.channel.on("request_draw", resp => {
+            if(resp.player === this.player)
+                if(confirm("Your opponent is requesting to draw the match, do you accept it?"))
+                    this.channel.push('end_game');
+        })
+
+        this.channel.on("end_game", resp => window.location.replace("/"))
         this.channel.on("request_restart", resp => {
             if(resp.player === this.player)
-                if(confirm("You are requested to restart the match, do you accept it"))
+                if(confirm("You are requested to restart the match, do you accept it?"))
                     this.restartGame()
         })
 
@@ -157,6 +165,18 @@ class Checkers extends React.Component {
         }
     };
 
+    requestDraw() {
+        let player = this.state.players.filter(player => {
+            if(player.name !== this.player)
+                return player
+        })
+        this.channel.push("request_draw", {player: player[0].name})
+    }
+
+    drawGame() {
+        this.channel.push("draw_game")
+    }
+
     requestRestart() {
         let player = this.state.players.filter(player => {
             if(player.name !== this.player)
@@ -180,7 +200,6 @@ class Checkers extends React.Component {
                   hasTurn: false
               }
           }
-            
               
         })
         this.channel.push("restart_game", {players})
@@ -204,10 +223,10 @@ class Checkers extends React.Component {
     
                             <div className="row action-row">
                                 <div className="column">
-                                    <button onClick={() => { this.demo() }}>Quit Game</button>
+                                    <button onClick={() => { this.requestQuit() }}>Quit Game</button>
                                 </div>
                                 <div className="column">
-                                    <button>Raise a draw</button>
+                                    <button onClick={() => { this.requestDraw() }}>Raise a draw</button>
                                 </div>
                                 <div className="column">
                                     <button onClick={() => {this.requestRestart()}}>Restart / Replay</button>

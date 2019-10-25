@@ -111,6 +111,27 @@ defmodule CheckersGameWeb.GameChannel do
 
   end
 
+  def handle_in("request_draw", %{"player" => player}, socket) do
+    name = socket.assigns[:name]
+    result = Enum.find(GameServer.peek(name)[:players], fn player -> player[:name] === socket.assigns[:user] end)
+    if result[:name] !== nil do
+      broadcast!(socket, "request_draw", %{player: player})
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:ok, %{}}, socket}
+    end
+  end
+
+  def handle_in("end_game", _payload, socket) do
+    broadcast!(socket, "end_game", %{})
+    {:reply, {:ok, %{}}, socket}
+  end
+
+  def handle_in("draw_game", _payload, socket) do
+    broadcast!(socket, "draw_game", %{})
+    {:reply, {:ok, %{}}, socket}
+  end
+
   def handle_in("request_restart", %{"player" => player}, socket) do
     name = socket.assigns[:name]
     result = Enum.find(GameServer.peek(name)[:players], fn player -> player[:name] === socket.assigns[:user] end)
