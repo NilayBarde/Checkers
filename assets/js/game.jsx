@@ -51,6 +51,12 @@ class Checkers extends React.Component {
                     this.channel.push('end_game');
         })
 
+        this.channel.on("request_quit", resp => {
+            if(resp.player === this.player)
+                alert('Your opponent has quit the game!')
+                    this.channel.push('end_game');
+        })
+
         this.channel.on("end_game", resp => window.location.replace("/"))
         this.channel.on("request_restart", resp => {
             if(resp.player === this.player)
@@ -164,6 +170,18 @@ class Checkers extends React.Component {
             this.messageAdded();
         }
     };
+
+    requestQuit() {
+        let player = this.state.players.filter(player => {
+            if(player.name !== this.player)
+                return player
+        })
+        this.channel.push("request_quit", {player: player[0].name})
+    }
+
+    quitGame() {
+        this.channel.push("quit_game")
+    }
 
     requestDraw() {
         let player = this.state.players.filter(player => {

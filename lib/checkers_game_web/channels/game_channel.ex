@@ -122,6 +122,17 @@ defmodule CheckersGameWeb.GameChannel do
     end
   end
 
+  def handle_in("request_quit", %{"player" => player}, socket) do
+    name = socket.assigns[:name]
+    result = Enum.find(GameServer.peek(name)[:players], fn player -> player[:name] === socket.assigns[:user] end)
+    if result[:name] !== nil do
+      broadcast!(socket, "request_quit", %{player: player})
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:ok, %{}}, socket}
+    end
+  end
+
   def handle_in("end_game", _payload, socket) do
     broadcast!(socket, "end_game", %{})
     {:reply, {:ok, %{}}, socket}
@@ -129,6 +140,11 @@ defmodule CheckersGameWeb.GameChannel do
 
   def handle_in("draw_game", _payload, socket) do
     broadcast!(socket, "draw_game", %{})
+    {:reply, {:ok, %{}}, socket}
+  end
+
+  def handle_in("quit_game", _payload, socket) do
+    broadcast!(socket, "quit_game", %{})
     {:reply, {:ok, %{}}, socket}
   end
 
