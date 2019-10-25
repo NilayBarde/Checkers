@@ -53,6 +53,16 @@ defmodule CheckersGame.GameServer do
     GenServer.cast(reg(name), {:switch_turns})
   end
 
+  def restart_game(name, players) do
+    game = GenServer.call(reg(name), {:restart_game, name, players})
+    GenServer.cast(reg(name), {:update_game, game})
+    game
+  end
+
+  def handle_cast({:update_game, game}, game) do
+    {:noreply, game}
+  end
+
   def handle_cast({:switch_turns}, game) do
     updatedPlayers = game[:players]
     |> Enum.map(fn player ->
@@ -67,6 +77,13 @@ defmodule CheckersGame.GameServer do
     game = Map.put(game, :players, [newPlayer | game[:players]])
     CheckersGame.BackupAgent.put(name, game)
     {:noreply, game}
+  end
+
+  def handle_call({:restart_game, name, players}, _from, _game) do
+    game = CheckersGame.Game.new()
+    game = Map.put(game, :players, players)
+    CheckersGame.BackupAgent.put(name, game)
+    {:reply, game, game}
   end
 
   def handle_call({:peek}, _from, game) do

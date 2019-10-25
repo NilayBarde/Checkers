@@ -28,25 +28,29 @@ class Checkers extends React.Component {
             blacks: [],
             doubleKill: [],
             players: [],
-            user: null
         }
 
         this.channel = props.channel
         this.channel.join()
             .receive("ok", resp => {
-                console.log(resp.state)
                 this.updateState(resp.state)
             })
             .receive("error", error => console.log("cant connect", error))
         
         this.player = prompt("Please Enter your name")
         this.channel.push("join_game", {player: this.player})
-            .receive("ok", resp => console.log(resp))
         this.channel.push("get_games")
         this.channel.on("update", resp => this.updateState(resp.state))
         this.channel.on("player_joined", resp => {
             this.updateState(resp.state)
         })
+        this.channel.on("request_restart", resp => {
+            if(resp.player === this.player)
+                if(confirm("You are requested to restart the match, do you accept it"))
+                    this.restartGame()
+        })
+
+        this.channel.on("restart_game", resp => this.updateState(resp.state))
     }
 
     updateState(state) {
@@ -104,7 +108,6 @@ class Checkers extends React.Component {
             this.channel.push("get_moves", { position })
             .receive("ok", resp => {
                 this.setState({ board: resp.state.board, doubleKill: resp.state.doubleKill })
-                console.log(resp)
             })
         }
     }
@@ -112,9 +115,7 @@ class Checkers extends React.Component {
     moveDisk(position) {
         this.channel.push("move_disk", { position })
             .receive("ok", resp => {
-                console.log(resp)
                 this.setState(resp.state)
-                console.log(this.state)
             })
         this.hasGameEnded();
     }
@@ -127,7 +128,6 @@ class Checkers extends React.Component {
             this.channel.push("chat_added", { message:message, user:this.player })
                 .receive("ok", resp => {
                     this.setState(resp.state)
-                    console.log(this.state)
                 })
         }
     }
@@ -157,6 +157,35 @@ class Checkers extends React.Component {
         }
     };
 
+    requestRestart() {
+        let player = this.state.players.filter(player => {
+            if(player.name !== this.player)
+                return player
+        })
+        this.channel.push("request_restart", {player: player[0].name})
+    }
+
+    restartGame() {
+        let players = this.state.players.map(player => {
+          if(player.disks === "black") {
+            return {
+                disks: "black",
+                name: player.name,
+                hasTurn: true
+            }
+          } else {
+              return {
+                  disks: "white",
+                  name: player.name,
+                  hasTurn: false
+              }
+          }
+            
+              
+        })
+        this.channel.push("restart_game", {players})
+    }
+
     render() {
         if(this.state.players.length < 2) {
             return (
@@ -179,6 +208,9 @@ class Checkers extends React.Component {
                                 </div>
                                 <div className="column">
                                     <button>Raise a draw</button>
+                                </div>
+                                <div className="column">
+                                    <button onClick={() => {this.requestRestart()}}>Restart / Replay</button>
                                 </div>
                             </div>
                         </div>

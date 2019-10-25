@@ -111,6 +111,28 @@ defmodule CheckersGameWeb.GameChannel do
 
   end
 
+  def handle_in("request_restart", %{"player" => player}, socket) do
+    name = socket.assigns[:name]
+    result = Enum.find(GameServer.peek(name)[:players], fn player -> player[:name] === socket.assigns[:user] end)
+    if result[:name] !== nil do
+      broadcast!(socket, "request_restart", %{player: player})
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:ok, %{}}, socket}
+    end
+
+  end
+
+  def handle_in("restart_game", %{"players" => players}, socket) do
+    name = socket.assigns[:name]
+    players = Enum.map(players, fn player ->
+      %{name: player["name"], hasTurn: player["hasTurn"], disks: player["disks"]}
+    end)
+    game = GameServer.restart_game(name, players)
+    broadcast!(socket, "restart_game", %{state: game})
+    {:reply, {:ok, %{state: game}}, socket}
+  end
+
   def handle_in("chat_added", %{"message" => message, "user" => user}, socket) do
     name = socket.assigns[:name]
     game = GameServer.chat_added(name, message, user)
