@@ -135,6 +135,9 @@ defmodule CheckersGameWeb.GameChannel do
 
   def handle_in("end_game", _payload, socket) do
     broadcast!(socket, "end_game", %{})
+    name = socket.assigns[:name]
+    BackupAgent.delete(name)
+    CheckersGameWeb.Endpoint.broadcast_from!(self(), "index:index", "new_game", %{games: BackupAgent.all()})
     {:reply, {:ok, %{}}, socket}
   end
 

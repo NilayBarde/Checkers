@@ -5,6 +5,7 @@ defmodule CheckersGameWeb.IndexChannel do
 
   def join("index:index", _payload, socket) do
     games = BackupAgent.all()
+    IO.inspect BackupAgent.all()
     {:ok, %{games: games}, socket}
   end
 
